@@ -5115,7 +5115,7 @@ button.close {
 .collapse.in {
   height: auto;
 }
-@media (max-width: 719px) {
+@media (max-width: 0px) {
   body {
     padding-top: 0;
   }
@@ -5262,7 +5262,7 @@ button.close {
     padding-right: 10px;
   }
 }
-@media (min-width: 720px) {
+@media (min-width: 1px) {
   .nav-collapse.collapse {
     height: auto !important;
     overflow: visible !important;

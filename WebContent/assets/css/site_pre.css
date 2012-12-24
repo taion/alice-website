@@ -1,5 +1,2 @@
 /* To be loaded prior to Bootstrap, so elements are overridden properly */
 
-body {
-	padding-top: 70px;
-}

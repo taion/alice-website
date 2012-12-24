@@ -1,36 +1,17 @@
-@media (min-width: 500px) and (max-width: 639px) {
-	.navbar .container {
-		width: 460px;
-	}
-}
-
-@media (min-width: 640px) and (max-width: 767px) {
-	.navbar .container {
-		width: 600px;
-	}
-}
-
 .navbar {
 	font-family: 'Open Sans Condensed', sans-serif;
 	font-weight: 300;
 	font-size: 25px;
+	padding-bottom: 20px;
 }
 
 .navbar .brand {
+	font-weight: bold;
 	font-size: 25px;
 	text-transform: uppercase;
 	letter-spacing: 1px;
-	width: 275px;
-}
-
-.navbar .nav-collapse .nav {
-	margin-right: 0;
-}
-
-
-.nav-collapse .nav > li > a {
-	font-weight: 300;
-	margin-left: 290px;
+	padding-left: 35px;
+	margin-bottom: -15px;
 }
 
 .carousel {
