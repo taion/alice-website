@@ -13,9 +13,9 @@
   rel='stylesheet' type='text/css' />
 <!--[endif]-->
 
-<link href="assets/css/site_pre.css" rel="stylesheet">
 <link href="assets/css/bootstrap.min.css" rel="stylesheet">
 <link href="assets/css/site.css" rel="stylesheet">
+
 <title>Alice Gao Photography</title>
 </head>
 <body>
@@ -33,25 +33,30 @@
     </div>
   </div>
 
-  <div class="carousel slide" data-interval="false">
-    <div class="carousel-inner">
-      <div class="item active">
-        <img
-          src="http://payload46.cargocollective.com/1/2/94367/3231995/AG49c01-R01-020_2048.jpg"
-          alt="">
+  <div class="carousel-holder">
+    <div class="carousel slide" data-interval="false">
+      <div class="carousel-inner-holder">
+        <div class="carousel-inner-dummy"></div>
+        <div class="carousel-inner">
+          <div class="item active"
+            style="background-image: url(http://payload46.cargocollective.com/1/2/94367/3231995/AG49c01-R01-020_2048.jpg)">
+          </div>
+          <div class="item"
+            style="background-image: url(http://alicegao.com/images/test1.jpg)">
+          </div>
+          <div class="item"
+            style="background-image: url(http://alicegao.com/images/test2.jpg)">
+          </div>
+          <div class="item"
+            style="background-image: url(http://alicegao.com/images/test3.jpg)">
+          </div>
+        </div>
       </div>
-      <div class="item">
-        <img src="http://alicegao.com/images/test1.jpg" alt="">
-      </div>
-      <div class="item">
-        <img src="http://alicegao.com/images/test2.jpg" alt="">
-      </div>
-      <div class="item">
-        <img src="http://alicegao.com/images/test3.jpg" alt="">
-      </div>
+
+      <a class="left carousel-control" href=".carousel"
+        data-slide="prev">&lsaquo;</a> <a class="right carousel-control"
+        href=".carousel" data-slide="next">&rsaquo;</a>
     </div>
-    <a class="left carousel-control" href=".carousel" data-slide="prev">&lsaquo;</a>
-    <a class="right carousel-control" href=".carousel" data-slide="next">&rsaquo;</a>
   </div>
 
   <script

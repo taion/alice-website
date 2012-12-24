@@ -5,6 +5,17 @@
 	padding-bottom: 20px;
 }
 
+.navbar .container-fluid {
+	width: 720px;
+	margin: auto;
+}
+
+@media (max-width: 789px) {
+	.navbar .container-fluid {
+		width: 100%;
+	}
+}
+
 .navbar .brand {
 	font-weight: bold;
 	font-size: 25px;
@@ -14,11 +25,40 @@
 	margin-bottom: -15px;
 }
 
-.carousel {
-	width: 900px;
+.carousel-holder {
+	width: 960px;
 	margin-left: auto;
 	margin-right: auto;
+}
+
+.carousel {
+	padding-left: 50px;
+	padding-right: 50px;
+}
+
+.carousel-inner-holder {
+	width: 100%;
+	display: inline-block;
+	position: relative;
+}
+
+.carousel-inner-dummy {
+	padding-top: 95%;
+}
+
+.carousel-inner {
+	position: absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+}
+
+.carousel-inner > .item {
 	height: 100%;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: contain;
 }
 
 .carousel-control {
@@ -28,14 +68,25 @@
 	width: 20px;
 	opacity: 1;
 	filter: none;
+	top: 50%;
+	left: 15px;
+	font-family: 'Open Sans', sans-serif;
+	font-size: 80px;
+	height: 80px;
+	text-align: center;
+	margin-top: -40px;
+}
+
+.carousel-control.right {
+	right: 15px;
 }
 
 .carousel-control:hover {
 	color: #333333;
 }
 
-@media (max-width: 939px) {
-	.carousel {
+@media (max-width: 959px) {
+	.carousel-holder {
 		width: 100%;
 	}
 }
