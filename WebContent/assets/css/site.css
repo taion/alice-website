@@ -1,28 +1,32 @@
 .navbar {
-	font-family: 'Open Sans Condensed', sans-serif;
-	font-weight: 300;
-	font-size: 25px;
-	padding-bottom: 20px;
+	font-family: 'Didot W01 Roman', serif;
+	text-transform: uppercase;
+	font-size: 30px;
+	letter-spacing: 1px;
+	margin-bottom: 20px;
 }
 
 .navbar .container-fluid {
-	width: 720px;
+	width: 870px;
 	margin: auto;
 }
 
-@media (max-width: 789px) {
+@media (max-width: 909px) {
 	.navbar .container-fluid {
 		width: auto;
 	}
 }
 
 .navbar .brand {
-	font-weight: bold;
-	font-size: 25px;
+	font-family: 'Didot W01 Bold', serif;
+	font-weight: 500;
+	font-size: 30px;
+	letter-spacing: 2px;
 	text-transform: uppercase;
-	letter-spacing: 1px;
-	padding-left: 35px;
-	margin-bottom: -15px;
+}
+
+.navbar .dropdown-menu {
+	font-size: 20px;
 }
 
 .carousel-holder {
@@ -70,7 +74,7 @@
 	filter: none;
 	top: 50%;
 	left: 15px;
-	font-family: 'Open Sans Condensed', sans-serif;
+	font-family: 'Open Sans', sans-serif;
 	font-size: 80px;
 	height: 50px;
 	text-align: center;

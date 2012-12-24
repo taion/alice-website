@@ -5,13 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <meta content='IE=Edge' http-equiv='X-UA-Compatible' />
-<!--[if IE 9]> <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,700italic,300,700|Open+Sans+Condensed:300' rel='stylesheet' type='text/css'/> <![endif]-->
-<!--[if lt IE 9]> <link href='http://fonts.googleapis.com/css?family=Open+Sans:300' rel='stylesheet' type='text/css'/> <link href='http://fonts.googleapis.com/css?family=Open+Sans:700' rel='stylesheet' type='text/css'/> <link href='http://fonts.googleapis.com/css?family=Open+Sans+Condensed:300' rel='stylesheet' type='text/css'/> <![endif]-->
+<!--[if IE 9]> <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,700italic,300,700' rel='stylesheet' type='text/css'/> <![endif]-->
+<!--[if lt IE 9]> <link href='http://fonts.googleapis.com/css?family=Open+Sans:300' rel='stylesheet' type='text/css'/> <link href='http://fonts.googleapis.com/css?family=Open+Sans:700' rel='stylesheet' type='text/css'/><![endif]-->
 <!--[if !IE]><!-->
 <link
-  href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,700italic,300,700|Open+Sans+Condensed:300,700'
+  href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,700italic,300,700'
   rel='stylesheet' type='text/css' />
 <!--[endif]-->
+
+<script type="text/javascript"
+  src="http://fast.fonts.com/jsapi/bf7ae55d-79af-4d72-b7dd-47e8e02d48fc.js"></script>
 
 <link href="assets/css/bootstrap.min.css" rel="stylesheet">
 <link href="assets/css/site.css" rel="stylesheet">
@@ -19,15 +22,21 @@
 <title>Alice Gao Photography</title>
 </head>
 <body>
-  <div class="navbar navbar-inverse navbar-static-top">
+  <div class="navbar navbar-static-top">
     <div class="navbar-inner">
       <div class="container-fluid">
-        <a class="brand" href="#">Alice Gao Photography</a>
+        <a class="brand" href="#">Alice Gao</a>
         <ul class="nav">
-          <li class="active"><a href="#">Food</a></li>
-          <li><a href="#">Restaurant</a></li>
-          <li><a href="#">Lifestyle</a></li>
-          <li><a href="#">Interiors</a></li>
+          <li class="dropdown"><a href="#" class="dropdown-toggle"
+            data-toggle="dropdown"> Portfolio <b class="caret"></b>
+          </a>
+            <ul class="dropdown-menu">
+              <li class="active"><a href="#">Food</a></li>
+              <li><a href="#">Restaurant</a></li>
+              <li><a href="#">Lifestyle</a></li>
+              <li><a href="#">Interiors</a></li>
+            </ul></li>
+          <li><a href="#">About</a></li>
         </ul>
       </div>
     </div>
