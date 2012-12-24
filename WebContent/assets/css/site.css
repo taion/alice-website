@@ -1,0 +1,32 @@
+@media (min-width: 640px) and (max-width: 767px) {
+	.navbar .container {
+		width: 600px;
+	}
+}
+
+@media (max-width: 939px) {
+	.carousel {
+		width: 100%;
+	}
+}
+
+@media (min-width: 940px) {
+	.carousel {
+		width: 900px;
+		margin-left: auto;
+		margin-right: auto;
+	}
+}
+
+.carousel-control {
+	background: none;
+	border: none;
+	color: #999999;
+	width: 20px;
+	opacity: 1;
+	filter: none;
+}
+
+.carousel-control:hover {
+	color: #333333;
+}
