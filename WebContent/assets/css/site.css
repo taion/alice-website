@@ -12,7 +12,7 @@
 
 @media (max-width: 789px) {
 	.navbar .container-fluid {
-		width: 100%;
+		width: auto;
 	}
 }
 
@@ -70,7 +70,7 @@
 	filter: none;
 	top: 50%;
 	left: 15px;
-	font-family: 'Open Sans', sans-serif;
+	font-family: 'Open Sans Condensed', sans-serif;
 	font-size: 80px;
 	height: 50px;
 	text-align: center;
@@ -88,5 +88,24 @@
 @media (max-width: 959px) {
 	.carousel-holder {
 		width: 100%;
+	}
+}
+
+@media (max-width: 599px) {
+	.carousel {
+		padding-left: 30px;
+		padding-right: 30px;
+	}
+
+	.carousel-control {
+		width: 12px;
+		font-size: 50px;
+		height: 40px;
+		margin-top: -20px;
+		left: 9px;
+	}
+
+	.carousel-control.right {
+		right: 9px;
 	}
 }
