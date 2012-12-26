@@ -7,14 +7,15 @@ a {
 
 .nav {
 	font-family: "ltc-bodoni-175", serif;
-	height: 50px;
-	margin-top: 20px;
-	margin-bottom: 50px;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	padding-top: 30px;
+	margin-bottom: 60px;
 	background: white;
 	position: relative;
 	z-index: 2;
-	font-size: 40px;
-	line-height: 40px;
+	font-size: 35px;
+	line-height: 35px;
 }
 
 .nav * {
@@ -26,16 +27,17 @@ a {
 }
 
 #main-contents {
-	width: 680px;
+	width: 755px;
 }
 
 .nav h1 {
-	font-size: 40px;
+	font-size: 35px;
+	font-weight: normal;
 	text-transform: uppercase;
-	letter-spacing: 1px;
 	float: left;
-	margin: 0;
-	padding: 5px 20px 5px 10px;
+	margin: 5px 5px 5px 0;
+	padding: 5px 15px 5px 10px;
+	border-right: 1px black solid;
 }
 
 .nav ul {
@@ -51,10 +53,10 @@ a {
 }
 
 .nav ul>li a {
-	color: #999;
+	color: grey;
 	text-decoration: none;
 	display: block;
-	padding: 5px 10px;
+	padding: 10px;
 }
 
 .nav ul>li.active>a,.nav ul>li>a:hover,.nav ul>li>a:active {
@@ -62,12 +64,11 @@ a {
 }
 
 .nav .dropdown-inner {
-	padding: 10px;
 	position: absolute;
 	z-index: -1;
 	bottom: 0;
-	font-size: 30px;
-	line-height: 30px;
+	font-size: 25px;
+	line-height: 25px;
 	left: 50%;
 	transition: bottom 1s;
 	-moz-transition: bottom 1s;
@@ -76,12 +77,12 @@ a {
 }
 
 .nav .dropdown:hover .dropdown-inner {
-	bottom: -50px;
+	bottom: -45px;
 }
 
 #portfolios {
-	width: 540px;
-	margin-left: -270px;
+	width: 680px;
+	margin-left: -340px;
 }
 
 .container:after {
@@ -97,9 +98,11 @@ a {
 #gallery-main {
 	width: 980px;
 	margin: auto;
+	padding-bottom: 80px;
 }
 
 .gallery-inner-holder {
+	position: relative;
 	padding-left: 60px;
 	padding-right: 60px;
 }
@@ -123,18 +126,20 @@ a {
 }
 
 .gallery .item {
-	position: absolute;
-	width: 100%;
-	height: 100%;
 	background-position: center;
 	background-repeat: no-repeat;
 	background-size: contain;
 	background-color: white;
-	display: none;
-	width: 100%;
 }
 
-.gallery .item.active,.gallery .item.next,.gallery .item.prev {
+.gallery.slideshow .item {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	display: none;
+}
+
+.gallery.slideshow .item.active,.gallery .item.next,.gallery .item.prev {
 	display: block;
 	transition: left 0.5s;
 	-moz-transition: left 0.5s;
@@ -142,33 +147,43 @@ a {
 	-o-transition: left 0.5s;
 }
 
-.gallery .item.prev {
+.gallery.slideshow .item.prev {
 	left: -100%;
 }
 
-.gallery .item.next {
+.gallery.slideshow .item.next {
 	left: 100%;
+}
+
+.gallery.contact-sheet .item {
+	position: relative;
+	float: left;
+	display: block;
+	width: 20%;
 }
 
 .gallery .control {
 	position: absolute;
 	display: block;
-	top: 50%;
-	height: 80px;
-	width: 20px;
-	margin-top: -40px;
-	padding: 20px;
 	text-decoration: none;
-	color: #999;
-	text-align: center;
+	color: grey;
 	font-size: 60px;
 	font-family: 'open-sans', sans-serif;
 	font-weight: 300;
 	cursor: pointer;
+	text-align: center;
+	padding: 20px;
+}
+
+.gallery .control.prev,.gallery .control.next {
+	top: 50%;
+	width: 20px;
+	height: 80px;
+	margin-top: -60px;
 }
 
 .gallery .control:hover {
-	color: #000;
+	color: black;
 }
 
 .gallery .control.prev {
@@ -185,4 +200,29 @@ a {
 
 .gallery .control.next:before {
 	content: '\203A'
+}
+
+.gallery .control.contact-sheet {
+	bottom: 0px;
+	left: 50%;
+	height: 40px;
+	width: 40px;
+	margin-left: -40px;
+}
+
+.gallery .control .contact-sheet-negative {
+	float: left;
+	width: 16px;
+	height: 16px;
+	margin: 2px;
+	background-color: grey;
+	transition: background-color 0.5s;
+	-moz-transition: background-color 0.5s;
+	-webkit-transition: background-color 0.5s;
+	-o-transition: background-color 0.5s;
+}
+
+.gallery .control:hover .contact-sheet-negative,.gallery .control.active .contact-sheet-negative
+	{
+	background-color: black;
 }

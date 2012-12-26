@@ -122,6 +122,10 @@ $(function() {
 		gallery.init();
 	});
 
+	$(".nav .active").click(function(event) {
+		event.preventDefault();
+	});
+
 	window.onhashchange = function() {
 		updateFromHash($mainGallery);
 	};
