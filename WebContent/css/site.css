@@ -2,7 +2,7 @@
 	font-family: "ltc-bodoni-175", serif;
 	height: 50px;
 	margin-top: 20px;
-	margin-bottom: 70px;
+	margin-bottom: 50px;
 	background: white;
 	position: relative;
 	z-index: 2;
@@ -18,7 +18,7 @@
 	margin: auto;
 }
 
-#nav-contents {
+#main-contents {
 	width: 680px;
 }
 
@@ -81,4 +81,105 @@
 	content: "";
 	clear: both;
 	display: block;
+}
+
+.gallery {
+	position: relative;
+}
+
+#gallery-main {
+	width: 980px;
+	margin: auto;
+}
+
+.gallery-inner-holder {
+	padding-left: 60px;
+	padding-right: 60px;
+}
+
+.gallery-inner {
+	position: relative;
+}
+
+.gallery-inner-dummy {
+	padding-top: 90%;
+}
+
+.gallery .item-holder {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	overflow: hidden;
+	cursor: pointer;
+}
+
+.gallery .item {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: contain;
+	background-color: white;
+	display: none;
+	width: 100%;
+}
+
+.gallery .item.active,.gallery .item.next,.gallery .item.prev {
+	display: block;
+	transition: left 0.5s;
+	-moz-transition: left 0.5s;
+	-webkit-transition: left 0.5s;
+	-o-transition: left 0.5s;
+}
+
+.gallery .item.prev {
+	left: -100%;
+}
+
+.gallery .item.next {
+	left: 100%;
+}
+
+.gallery .control {
+	position: absolute;
+	display: block;
+	top: 50%;
+	height: 80px;
+	width: 20px;
+	margin-top: -40px;
+	padding: 20px;
+	text-decoration: none;
+	color: #999;
+	text-align: center;
+	font-size: 60px;
+	font-family: 'open-sans', sans-serif;
+	font-weight: 300;
+	cursor: pointer;
+	transition: color 0.5s;
+	-moz-transition: color 0.5s;
+	-webkit-transition: color 0.5s;
+	-o-transition: color 0.5s;
+}
+
+.gallery .control:hover {
+	color: #000;
+}
+
+.gallery .control.prev {
+	left: 0px;
+}
+
+.gallery .control.prev:before {
+	content: "\2039"
+}
+
+.gallery .control.next {
+	right: 0px;
+}
+
+.gallery .control.next:before {
+	content: '\203A'
 }
