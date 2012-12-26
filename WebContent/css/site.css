@@ -1,0 +1,84 @@
+.nav {
+	font-family: "ltc-bodoni-175", serif;
+	height: 50px;
+	margin-top: 20px;
+	margin-bottom: 70px;
+	background: white;
+	position: relative;
+	z-index: 2;
+	font-size: 40px;
+	line-height: 40px;
+}
+
+.nav * {
+	background: white;
+}
+
+.nav>.container {
+	margin: auto;
+}
+
+#nav-contents {
+	width: 680px;
+}
+
+.nav h1 {
+	font-size: 40px;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	float: left;
+	margin: 0;
+	padding: 5px 20px 5px 10px;
+}
+
+.nav ul {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	float: left;
+}
+
+.nav ul>li {
+	display: block;
+	float: left;
+}
+
+.nav ul>li a {
+	color: #999;
+	text-decoration: none;
+	display: block;
+	padding: 5px 10px;
+}
+
+.nav ul>li.active>a,.nav ul>li>a:hover,.nav ul>li>a:active {
+	color: black;
+}
+
+.nav .dropdown-inner {
+	padding: 10px;
+	position: absolute;
+	z-index: -1;
+	bottom: 0;
+	font-size: 30px;
+	line-height: 30px;
+	left: 50%;
+	transition: bottom 1s;
+	-moz-transition: bottom 1s;
+	-webkit-transition: bottom 1s;
+	-o-transition: bottom 1s;
+}
+
+.nav .dropdown:hover .dropdown-inner {
+	bottom: -50px;
+}
+
+#portfolios {
+	width: 540px;
+	margin-left: -270px;
+}
+
+.container:after {
+	content: "";
+	clear: both;
+	display: block;
+}
