@@ -75,22 +75,45 @@ Gallery.prototype = {
 	}
 };
 
-$(function() {
-	var initialItemTag = window.location.hash.substring(1);
-	var $mainGalleryItems = $("#gallery-main .item");
-	var initialItemIndex = Number(initialItemTag);
+function initializeFromHash($gallery) {
+	var hashItemTag = window.location.hash.substring(1);
+	var $galleryItems = $gallery.find(".item");
+	var hashItemIndex = Number(hashItemTag);
 
-	var initialItem = $mainGalleryItems[0]; // Crappy Eclipse JS code analysis
-	if (!isNaN(initialItemIndex)) {
-		initialItem = $mainGalleryItems[initialItemIndex];
-	} else if (initialItemTag) {
-		var $initialItemsByTitle = $mainGalleryItems.filter('[title="'
-				+ initialItemTag + '"]');
-		if ($initialItemsByTitle) {
-			initialItem = $initialItemsByTitle[0];
+	var hashItem = $galleryItems[0]; // Crappy Eclipse JS code analysis
+	if (!isNaN(hashItemIndex)) {
+		hashItem = $galleryItems[hashItemIndex];
+	} else if (hashItemTag) {
+		var $hashItemsByTitle = $galleryItems.filter('[title="' + hashItemTag
+				+ '"]');
+		if ($hashItemsByTitle) {
+			hashItem = $hashItemsByTitle[0];
 		}
 	}
-	$(initialItem).addClass("active");
+	$(hashItem).addClass("active");
+}
+
+function updateFromHash($gallery) {
+	var gallery = $gallery.data("gallery");
+	var hashItemTag = window.location.hash.substring(1);
+	var hashItemIndex = Number(hashItemTag);
+
+	if (isNaN(hashItemIndex)) {
+		var $items = gallery.$items;
+		var $hashItemsByTitle = $items.filter('[title="' + hashItemTag + '"]');
+		if ($hashItemsByTitle) {
+			hashItemIndex = $items.index($hashItemsByTitle[0]);
+		} else
+			hashItemIndex = 0;
+	}
+
+	if (hashItemIndex != gallery.activeIndex)
+		gallery.slide(hashItemIndex, hashItemIndex > gallery.activeIndex);
+}
+
+$(function() {
+	$mainGallery = $("#gallery-main");
+	initializeFromHash($mainGallery);
 
 	$(".gallery").each(function(index, element) {
 		var $element = $(element);
@@ -99,7 +122,11 @@ $(function() {
 		gallery.init();
 	});
 
-	$("#gallery-main").on("item-change", function(event, targetIndex, $target) {
+	window.onhashchange = function() {
+		updateFromHash($mainGallery);
+	};
+
+	$mainGallery.on("item-change", function(event, targetIndex, $target) {
 		var itemTag = $target.attr("title");
 		if (!itemTag)
 			itemTag = targetIndex;

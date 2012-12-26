@@ -1,3 +1,10 @@
+a {
+	transition: color 0.5s;
+	-moz-transition: color 0.5s;
+	-webkit-transition: color 0.5s;
+	-o-transition: color 0.5s;
+}
+
 .nav {
 	font-family: "ltc-bodoni-175", serif;
 	height: 50px;
@@ -158,10 +165,6 @@
 	font-family: 'open-sans', sans-serif;
 	font-weight: 300;
 	cursor: pointer;
-	transition: color 0.5s;
-	-moz-transition: color 0.5s;
-	-webkit-transition: color 0.5s;
-	-o-transition: color 0.5s;
 }
 
 .gallery .control:hover {
