@@ -16,10 +16,12 @@ a {
 	z-index: 2;
 	font-size: 35px;
 	line-height: 35px;
+	text-transform: uppercase;
 }
 
 .nav * {
 	background: white;
+	-webkit-font-smoothing: antialiased;
 }
 
 .nav>.container {
@@ -139,7 +141,8 @@ a {
 	display: none;
 }
 
-.gallery.slideshow .item.active,.gallery .item.next,.gallery .item.prev {
+.gallery.slideshow .item.active,.gallery .item.next,.gallery .item.prev
+	{
 	display: block;
 	transition: left 0.5s;
 	-moz-transition: left 0.5s;
@@ -172,7 +175,6 @@ a {
 	font-weight: 300;
 	cursor: pointer;
 	text-align: center;
-	padding: 20px;
 }
 
 .gallery .control.prev,.gallery .control.next {
@@ -180,6 +182,7 @@ a {
 	width: 20px;
 	height: 80px;
 	margin-top: -60px;
+	padding: 20px;
 }
 
 .gallery .control:hover {
@@ -205,24 +208,41 @@ a {
 .gallery .control.contact-sheet {
 	bottom: 0px;
 	left: 50%;
-	height: 40px;
-	width: 40px;
+	height: 36px;
+	width: 36px;
 	margin-left: -40px;
-}
-
-.gallery .control .contact-sheet-negative {
-	float: left;
-	width: 16px;
-	height: 16px;
-	margin: 2px;
 	background-color: grey;
+	border: 22px white solid;
 	transition: background-color 0.5s;
 	-moz-transition: background-color 0.5s;
 	-webkit-transition: background-color 0.5s;
 	-o-transition: background-color 0.5s;
 }
 
-.gallery .control:hover .contact-sheet-negative,.gallery .control.active .contact-sheet-negative
+.gallery .control.contact-sheet:before,.gallery .control.contact-sheet:after
+	{
+	content: "";
+	display: block;
+	position: absolute;
+	background-color: white;
+	display: block;
+}
+
+.gallery .control.contact-sheet:before {
+	width: 4px;
+	height: 36px;
+	left: 50%;
+	margin-left: -2px;
+}
+
+.gallery .control.contact-sheet:after {
+	width: 36px;
+	height: 4px;
+	top: 50%;
+	margin-top: -2px;
+}
+
+.gallery .control.contact-sheet:hover,.gallery .control.contact-sheet.active
 	{
 	background-color: black;
 }
