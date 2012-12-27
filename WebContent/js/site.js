@@ -4,51 +4,81 @@ var Gallery = function($element) {
 
 Gallery.prototype = {
 	init : function() {
-		this.$itemHolder = $(this.$element.find(".item-holder"));
+		this.galleryType = this.$element.attr("gallery-type");
+
 		this.$items = this.$element.find(".item");
 		this.size = this.$items.length;
 
 		var $active = this.$items.filter(".active");
-		this.markActive(this.$items.index($active), $active);
+		this.activeIndex = this.$items.index($active);
 
+		this.positionSlideBound = this.positionSlide();
+		this.draw();
+
+		this.$element.find(".gallery-inner").click(this.itemClick());
+		this.$element.find(".control.next").click(this.controlDirection(1));
+		this.$element.find(".control.prev").click(this.controlDirection(-1));
+
+		this.$element.find(".control.contact-sheet").click(
+				this.toggleContactSheet());
+	},
+
+	positionSlide : function(index, element) {
 		var that = this;
-		var slideNext = function(event) {
-			event.preventDefault();
-			that.slideOne(1);
+		return function(index, element) {
+			var $element = $(element);
+			$element.css("top", 0);
+			$element.css("left", 100 * (index - that.activeIndex) + "%");
 		};
-		this.$element.find(".item-holder").click(slideNext);
-		this.$element.find(".control.next").click(slideNext);
-		this.$element.find(".control.prev").click(function(event) {
+	},
+
+	draw : function() {
+		this.$element.attr("gallery-type", this.galleryType);
+		this.$items.find(".active").removeClass("active");
+		$(this.$items[this.activeIndex]).addClass("active");
+
+		if (this.galleryType == "slideshow")
+			this.$items.each(this.positionSlideBound);
+
+		this.$element.trigger("galleryupdate", this);
+	},
+
+	itemClick : function() {
+		var that = this;
+		return function(event) {
+			if (that.galleryType == "slideshow")
+				that.incrementSlide(1);
+		};
+	},
+
+	controlDirection : function(increment) {
+		var that = this;
+		return function(event) {
 			event.preventDefault();
-			that.slideOne(-1);
-		});
-		
-		this.$element.find(".control.contact-sheet").click(function(event) {
-			event.preventDefault();
-			that.toggleContactSheet();
-		});
+
+			if (that.galleryType == "slideshow")
+				that.incrementSlide(increment);
+		};
 	},
 
-	markActive : function(activeIndex, $active) {
-		this.activeIndex = activeIndex;
-		this.$active = $active;
-	},
-
-	slideOne : function(increment) {
-		var target = (this.size + this.activeIndex + increment) % this.size;
-		this.slide(target);
-	},
-
-	slide : function(targetIndex) {
-		this.$itemHolder.css("left", targetIndex * -100 + "%");
-		var $target = $(this.$items[targetIndex]);
-		this.markActive(targetIndex, $target);
-		this.$element.trigger("item-change", [ targetIndex, $target ]);
+	incrementSlide : function(increment) {
+		var targetIndex = (this.size + this.activeIndex + increment)
+				% this.size;
+		this.activeIndex = targetIndex;
+		this.draw();
 	},
 
 	toggleContactSheet : function() {
-		this.$element.attr("gallery-type", "contact-sheet");
-		this.$itemHolder.css("left", 0);
+		var that = this;
+		return function(event) {
+			event.preventDefault();
+			if (that.galleryType == "contact-sheet")
+				that.galleryType = "slideshow";
+			else
+				that.galleryType = "contact-sheet";
+
+			that.draw();
+		};
 	}
 };
 
@@ -57,15 +87,16 @@ function initializeFromHash($gallery) {
 	var $galleryItems = $gallery.find(".item");
 	var hashItemIndex = Number(hashItemTag);
 
-	var hashItem = $galleryItems[0]; // Crappy Eclipse JS code analysis
+	var hashItem;
 	if (!isNaN(hashItemIndex)) {
 		hashItem = $galleryItems[hashItemIndex];
-	} else if (hashItemTag) {
+	} else {
 		var $hashItemsByTitle = $galleryItems.filter('[title="' + hashItemTag
 				+ '"]');
-		if ($hashItemsByTitle) {
+		if ($hashItemsByTitle.size())
 			hashItem = $hashItemsByTitle[0];
-		}
+		else
+			hashItem = $galleryItems[0];
 	}
 	$(hashItem).addClass("active");
 }
@@ -84,13 +115,39 @@ function updateFromHash($gallery) {
 			hashItemIndex = 0;
 	}
 
-	if (hashItemIndex != gallery.activeIndex)
-		gallery.slide(hashItemIndex, hashItemIndex > gallery.activeIndex);
+	if (hashItemIndex != gallery.activeIndex) {
+		gallery.activeIndex = hashItemIndex;
+		gallery.draw();
+	}
 }
 
 $(function() {
-	$mainGallery = $("#gallery-main");
-	initializeFromHash($mainGallery);
+	$galleryMain = $("#gallery-main");
+	initializeFromHash($galleryMain);
+
+	var ignoreHashChange = 0;
+	$galleryMain.on("galleryupdate", function(event, gallery) {
+		var $active = $(gallery.$items[gallery.activeIndex]);
+		var itemTag = $active.attr("title");
+		if (!itemTag)
+			itemTag = gallery.activeIndex;
+
+		var hash;
+		if (gallery.galleryType == "contact-sheet")
+			hash = "contact:" + itemTag;
+		else
+			hash = itemTag;
+
+		ignoreHashChange++;
+		window.location.hash = hash;
+	});
+
+	window.onhashchange = function() {
+		if (ignoreHashChange)
+			ignoreHashChange--;
+		else
+			updateFromHash($galleryMain);
+	};
 
 	$(".gallery").each(function(index, element) {
 		var $element = $(element);
@@ -99,19 +156,9 @@ $(function() {
 		gallery.init();
 	});
 
+	$galleryMain.find(".gallery-inner").css("display", "block");
+
 	$(".nav .active>a").click(function(event) {
 		event.preventDefault();
-	});
-
-	window.onhashchange = function() {
-		updateFromHash($mainGallery);
-	};
-
-	$mainGallery.on("item-change", function(event, targetIndex, $target) {
-		var itemTag = $target.attr("title");
-		if (!itemTag)
-			itemTag = targetIndex;
-
-		window.location.hash = itemTag;
 	});
 });
