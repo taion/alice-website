@@ -4,6 +4,7 @@ var Gallery = function($element) {
 
 Gallery.prototype = {
 	init : function() {
+		this.$itemHolder = $(this.$element.find(".item-holder"));
 		this.$items = this.$element.find(".item");
 		this.size = this.$items.length;
 
@@ -21,6 +22,11 @@ Gallery.prototype = {
 			event.preventDefault();
 			that.slideOne(-1);
 		});
+		
+		this.$element.find(".control.contact-sheet").click(function(event) {
+			event.preventDefault();
+			that.toggleContactSheet();
+		});
 	},
 
 	markActive : function(activeIndex, $active) {
@@ -30,48 +36,19 @@ Gallery.prototype = {
 
 	slideOne : function(increment) {
 		var target = (this.size + this.activeIndex + increment) % this.size;
-		this.slide(target, increment > 0);
+		this.slide(target);
 	},
 
-	slide : function(targetIndex, next) {
-		if (next) {
-			startClass = "next";
-			endClass = "prev";
-		} else {
-			startClass = "prev";
-			endClass = "next";
-		}
-
+	slide : function(targetIndex) {
+		this.$itemHolder.css("left", targetIndex * -100 + "%");
 		var $target = $(this.$items[targetIndex]);
-		this.transition1(targetIndex, $target, startClass, endClass);
-	},
-
-	transition1 : function(targetIndex, $target, startClass, endClass) {
-		$target.removeClass("prev next");
-
-		var that = this;
-		setTimeout(function() {
-			that.transition2(targetIndex, $target, startClass, endClass);
-		}, 0);
-	},
-
-	transition2 : function(targetIndex, $target, startClass, endClass) {
-		$target.addClass(startClass);
-
-		var that = this;
-		setTimeout(function() {
-			that.transition3(targetIndex, $target, startClass, endClass);
-		}, 0);
-	},
-
-	transition3 : function(targetIndex, $target, startClass, endClass) {
-		$target.addClass("active");
-		this.$active.addClass(endClass);
-		$target.removeClass(startClass);
-		this.$active.removeClass("active");
-
 		this.markActive(targetIndex, $target);
 		this.$element.trigger("item-change", [ targetIndex, $target ]);
+	},
+
+	toggleContactSheet : function() {
+		this.$element.attr("gallery-type", "contact-sheet");
+		this.$itemHolder.css("left", 0);
 	}
 };
 
@@ -122,7 +99,7 @@ $(function() {
 		gallery.init();
 	});
 
-	$(".nav .active").click(function(event) {
+	$(".nav .active>a").click(function(event) {
 		event.preventDefault();
 	});
 

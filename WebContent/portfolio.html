@@ -25,10 +25,10 @@
 			<ul>
 				<li class="active dropdown"><a href="#">Portfolio</a>
 					<ul id="portfolios" class="dropdown-inner container">
-						<li class="active"><a href="#">Food</a></li>
-						<li><a href="#">Restaurants</a></li>
+						<li class="active"><a href="portfolio.html#food">Food</a></li>
+						<li><a href="#">Still Life</a></li>
+						<li><a href="portfolio.html#lifestyle">Lifestyle</a></li>
 						<li><a href="#">Interiors</a></li>
-						<li><a href="#">Lifestyle</a></li>
 					</ul></li>
 				<li><a href="#">About</a></li>
 				<li><a href="http://lingeredupon.blogspot.com/">Blog</a></li>
@@ -36,19 +36,22 @@
 		</div>
 	</div>
 
-	<div id="gallery-main" class="gallery slideshow">
+	<div id="gallery-main" class="gallery" gallery-type="slideshow">
 		<div class="gallery-inner-holder">
 			<div class="gallery-inner">
-				<div class="gallery-inner-dummy"></div>
 				<div class="item-holder">
-					<div class="item" title="gwynett-dessert"
-						style="background-image: url('http://alicegao.com/images/test1.jpg')"></div>
-					<div class="item"
-						style="background-image: url('http://alicegao.com/images/test2.jpg')"></div>
-					<div class="item" title="polenta"
-						style="background-image: url('http://alicegao.com/images/test3.jpg')"></div>
-					<div class="item" title="paris"
-						style="background-image: url('http://payload46.cargocollective.com/1/2/94367/3231995/AG49c01-R01-020_2048.jpg')"></div>
+					<section id="food">
+						<div class="item" title="gwynett-dessert"
+							style="background-image: url('http://alicegao.com/images/test1.jpg')"></div>
+						<div class="item"
+							style="background-image: url('http://alicegao.com/images/test2.jpg')"></div>
+						<div class="item" title="polenta"
+							style="background-image: url('http://alicegao.com/images/test3.jpg')"></div>
+					</section>
+					<section id="lifestyle">
+						<div class="item" title="paris"
+							style="background-image: url('http://payload46.cargocollective.com/1/2/94367/3231995/AG49c01-R01-020_2048.jpg')"></div>
+					</section>
 				</div>
 			</div>
 			<a class="control prev"></a> <a class="control next"></a>
@@ -59,6 +62,5 @@
 	<script
 		src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 	<script src="js/site.js"></script>
-
 </body>
 </html>
