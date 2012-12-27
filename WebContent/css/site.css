@@ -113,17 +113,24 @@ a {
 	position: absolute;
 	width: 100%;
 	height: 100%;
+	width: 100%;
 }
 
 .gallery .item {
 	position: absolute;
+	z-index: 1;
 	background-position: center;
 	background-repeat: no-repeat;
 	background-size: contain;
-	transition: width 0.5s, height 0.5s, left 0.5s, top 0.5s;
-	-moz-transition: width 0.5s, height 0.5s, left 0.5s, top 0.5s;
-	-webkit-transition: width 0.5s, height 0.5s, left 0.5s, top 0.5s;
-	-o-transition: width 0.5s, height 0.5s, left 0.5s, top 0.5s;
+	transition: width 0.5s, height 0.5s, left 0.5s, top 0.5s, margin 0.5s,
+		opacity 0.5s;
+	-moz-transition: width 0.5s, height 0.5s, left 0.5s, top 0.5s, margin
+		0.5s, opacity 0.5s;
+	-webkit-transition: width 0.5s, height 0.5s, left 0.5s, top 0.5s, margin
+		0.5s, opacity 0.5s;
+	-o-transition: width 0.5s, height 0.5s, left 0.5s, top 0.5s, margin 0.5s,
+		opacity 0.5s;
+	background-position: center;
 	background-position: center;
 }
 
@@ -136,6 +143,16 @@ a {
 	width: 20%;
 	height: 20%;
 	margin: 2.5%;
+	cursor: pointer;
+}
+
+.gallery[gallery-type="contact-sheet"] .gallery-inner:hover .item {
+	opacity: 0.5;
+}
+
+.gallery[gallery-type="contact-sheet"] .gallery-inner:hover .item:hover
+	{
+	opacity: 1;
 }
 
 .gallery .control {
@@ -187,28 +204,30 @@ a {
 .gallery .control.contact-sheet {
 	bottom: -80px;
 	left: 50%;
+	margin-left: -40px;
+	padding: 22px;
+}
+
+.contact-sheet-icon {
 	height: 36px;
 	width: 36px;
-	margin-left: -40px;
-	border: 22px white solid;
 	transition: background-color 0.5s;
 	-moz-transition: background-color 0.5s;
 	-webkit-transition: background-color 0.5s;
 	-o-transition: background-color 0.5s;
 }
 
-.gallery[gallery-type="slideshow"] .control.contact-sheet,.gallery[gallery-type="contact-sheet"] .control.contact-sheet:hover
+.gallery[gallery-type="slideshow"] .contact-sheet-icon,.gallery[gallery-type="contact-sheet"] .control.contact-sheet:hover .contact-sheet-icon
 	{
 	background-color: grey;
 }
 
-.gallery[gallery-type="slideshow"] .control.contact-sheet:hover,.gallery[gallery-type="contact-sheet"] .control.contact-sheet
+.gallery[gallery-type="slideshow"]  .control.contact-sheet:hover .contact-sheet-icon,.gallery[gallery-type="contact-sheet"] .contact-sheet-icon
 	{
 	background-color: black;
 }
 
-.gallery .control.contact-sheet:before,.gallery .control.contact-sheet:after
-	{
+.contact-sheet-icon:before,.gallery .contact-sheet-icon:after {
 	content: "";
 	display: block;
 	position: absolute;
@@ -216,27 +235,29 @@ a {
 	display: block;
 }
 
-.gallery .control.contact-sheet:before {
+.contact-sheet-icon:before {
 	width: 4px;
-	height: 36px;
+	height: 40px;
 	left: 50%;
+	margin-top: -2px;
 	margin-left: -2px;
 }
 
-.gallery .control.contact-sheet:after {
-	width: 36px;
+.contact-sheet-icon:after {
+	width: 40px;
 	height: 4px;
 	top: 50%;
 	margin-top: -2px;
+	margin-left: -2px;
 }
 
 #main-contents {
-	width: 755px;
+	width: 780px;
 }
 
 #portfolios {
-	width: 630px;
-	margin-left: -315px;
+	width: 660px;
+	margin-left: -330px;
 }
 
 #gallery-main {
