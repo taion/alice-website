@@ -13,6 +13,20 @@ Gallery.prototype = {
 		this.$items = this.$element.find(".item");
 		this.size = this.$items.length;
 
+		this.itemIndexToPageSpec = [];
+		var $sections = this.$element.find("section");
+		var page = 0;
+		for ( var i = 0; i < $sections.length; i++) {
+			var j = 0;
+			var sectionLength = $($sections[i]).children().length;
+			while (j < sectionLength) {
+				for ( var k = 0; k < this.CONTACTS_PER_PAGE
+						&& j < sectionLength; j++, k++)
+					this.itemIndexToPageSpec.push([ page, k ]);
+				page++;
+			}
+		}
+
 		this.setActive(this.$items.index(this.$items.filter(".active")));
 
 		this.ignoreGalleryClick = 0;
@@ -31,11 +45,6 @@ Gallery.prototype = {
 		this.$active = $(this.$items[activeIndex]);
 
 		this.$section = this.$active.parent();
-		var $sectionItems = this.$section.children();
-		this.sheetStart = this.activeIndex
-				- ($sectionItems.index(this.$active) % this.CONTACTS_PER_PAGE);
-		this.sheetEnd = Math.min(this.sheetStart + this.CONTACTS_PER_PAGE - 1,
-				this.$items.index($sectionItems[$sectionItems.size() - 1]));
 
 		this.draw();
 	},
@@ -57,24 +66,19 @@ Gallery.prototype = {
 		this.$element.trigger("galleryupdate", this);
 	},
 
-	positionContact : function(i, item, sheetStart, sheetEnd) {
+	positionContact : function(i, item) {
 		var $item = $(item);
+		var pageSpec = this.itemIndexToPageSpec[i];
+		var pageIndex = pageSpec[0];
+		var activePageIndex = this.itemIndexToPageSpec[this.activeIndex][0];
+		var contactIndex = pageSpec[1];
 
-		var top, left;
-		if (i < this.sheetStart) {
-			top = "40%";
-			left = "-60%";
-		} else if (i > this.sheetEnd) {
-			top = "40%";
-			left = "140%";
-		} else {
-			var sheetIndex = i - this.sheetStart;
-			var rowIndex = Math.floor(sheetIndex / this.CONTACTS_PER_ROW);
-			var colIndex = sheetIndex % this.CONTACTS_PER_ROW;
+		var relPage = pageIndex - activePageIndex;
+		var rowIndex = Math.floor(contactIndex / this.CONTACTS_PER_ROW);
+		var colIndex = contactIndex % this.CONTACTS_PER_ROW;
 
-			top = rowIndex * 100 / this.CONTACTS_PER_COL + "%";
-			left = colIndex * 100 / this.CONTACTS_PER_ROW + "%";
-		}
+		var top = (rowIndex / this.CONTACTS_PER_COL) * 100 + "%";
+		var left = (relPage + colIndex / this.CONTACTS_PER_ROW) * 100 + "%";
 
 		$item.css("top", top);
 		$item.css("left", left);
@@ -121,17 +125,20 @@ Gallery.prototype = {
 	},
 
 	incrementSheet : function(increment) {
-		var nextIndex;
-		if (increment > 0)
-			nextIndex = this.sheetEnd + increment;
-		else
-			nextIndex = this.sheetStart + increment;
+		var nextIndex = this.activeIndex;
+		var activePage = this.itemIndexToPageSpec[this.activeIndex][0];
+		while (this.itemIndexToPageSpec[nextIndex][0] == activePage)
+			nextIndex = this.incrementIndex(nextIndex, increment);
 
-		this.setActive((this.size + nextIndex) % this.size);
+		this.setActive(nextIndex);
 	},
 
 	incrementSlide : function(increment) {
-		this.setActive((this.size + this.activeIndex + increment) % this.size);
+		this.setActive(this.incrementIndex(this.activeIndex, increment));
+	},
+
+	incrementIndex : function(index, increment) {
+		return (this.size + index + increment) % this.size;
 	},
 
 	toggleContactSheet : function() {
@@ -177,7 +184,7 @@ function initializeFromHash($gallery) {
 	} else {
 		var $hashItemsByTitle = $galleryItems.filter('[title="' + hashItemTag
 				+ '"]');
-		if ($hashItemsByTitle.size())
+		if ($hashItemsByTitle.length)
 			hashItem = $hashItemsByTitle[0];
 		else
 			hashItem = $galleryItems[0];
@@ -212,11 +219,16 @@ function updateFromHash($gallery) {
 }
 
 $(function() {
-	$galleryMain = $("#gallery-main");
+	var $galleryMain = $("#gallery-main");
 	initializeFromHash($galleryMain);
 
+	var $sectionHeaders = $("#portfolios li");
 	var ignoreHashChange = 0;
 	$galleryMain.on("galleryupdate", function(event, gallery) {
+		$sectionHeaders.removeClass("active");
+		$sectionHeaders.find('[href$="#' + gallery.$section[0].id + '"]')
+				.parent().addClass("active");
+
 		var itemTag = gallery.$active.attr("title");
 		if (!itemTag)
 			itemTag = gallery.activeIndex;
@@ -249,7 +261,21 @@ $(function() {
 
 	$galleryMain.find(".gallery-inner").css("display", "block");
 
-	$(".nav .active>a").click(function(event) {
+	$(".nav a").click(function(event) {
+		if ($(this).parent().hasClass("active"))
+			event.preventDefault();
+	});
+
+	var galleryMain = $galleryMain.data("gallery");
+	$("#portfolios a").click(function(event) {
 		event.preventDefault();
+
+		var $this = $(this);
+		if (!$this.parent().hasClass("active")) {
+			var $section = $("section" + this.hash);
+			var sectionItem = $section.children()[0];
+			var sectionItemIndex = galleryMain.$items.index(sectionItem);
+			galleryMain.setActive(sectionItemIndex);
+		}
 	});
 });

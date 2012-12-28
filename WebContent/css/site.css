@@ -43,19 +43,19 @@ a {
 	display: table;
 }
 
-.nav ul>li {
+.nav li {
 	display: block;
 	float: left;
 }
 
-.nav ul>li a {
+.nav li a {
 	color: grey;
 	text-decoration: none;
 	display: block;
 	padding: 10px;
 }
 
-.nav ul>li.active>a,.nav ul>li>a:hover,.nav ul>li>a:active {
+.nav li.active>a,.nav li>a:hover,.nav li>a:active {
 	color: black;
 }
 
@@ -122,13 +122,13 @@ a {
 	background-repeat: no-repeat;
 	background-size: contain;
 	transition: width 0.5s, height 0.5s, left 0.5s, top 0.5s, margin 0.5s,
-		opacity 0.5s;
+		box-shadow 0.5s;
 	-moz-transition: width 0.5s, height 0.5s, left 0.5s, top 0.5s, margin
-		0.5s, opacity 0.5s;
+		0.5s, box-shadow 0.5s;
 	-webkit-transition: width 0.5s, height 0.5s, left 0.5s, top 0.5s, margin
-		0.5s, opacity 0.5s;
+		0.5s, box-shadow 0.5s;
 	-o-transition: width 0.5s, height 0.5s, left 0.5s, top 0.5s, margin 0.5s,
-		opacity 0.5s;
+		box-shadow 0.5s;
 	background-position: center;
 	background-position: center;
 }
@@ -145,13 +145,11 @@ a {
 	cursor: pointer;
 }
 
-.gallery[gallery-type="contact-sheet"] .gallery-inner:hover .item {
-	opacity: 0.5;
-}
-
 .gallery[gallery-type="contact-sheet"] .gallery-inner:hover .item:hover
 	{
-	opacity: 1;
+	box-shadow: 0 0 20px grey;
+	-moz-box-shadow: 0 0 20px grey;
+	-webkit-box-shadow: 0 0 20px grey;
 }
 
 .gallery .control {
