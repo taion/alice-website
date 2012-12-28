@@ -24,7 +24,8 @@ a {
 	-webkit-font-smoothing: antialiased;
 }
 
-.nav>.container {
+.nav .container {
+	display: table;
 	margin: auto;
 }
 
@@ -39,7 +40,7 @@ a {
 	list-style: none;
 	padding: 0;
 	margin: 0;
-	float: left;
+	display: table;
 }
 
 .nav ul>li {
@@ -61,10 +62,11 @@ a {
 .nav .dropdown-inner {
 	position: absolute;
 	z-index: -1;
+	left: 0;
+	right: 0;
 	bottom: 0;
 	font-size: 25px;
 	line-height: 25px;
-	left: 50%;
 	transition: bottom 1s;
 	-moz-transition: bottom 1s;
 	-webkit-transition: bottom 1s;
@@ -246,15 +248,6 @@ a {
 	top: 50%;
 	margin-top: -2px;
 	margin-left: -2px;
-}
-
-#main-contents {
-	width: 780px;
-}
-
-#portfolios {
-	width: 660px;
-	margin-left: -330px;
 }
 
 #gallery-main {
