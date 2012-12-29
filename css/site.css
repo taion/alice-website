@@ -55,7 +55,7 @@ a {
 	padding: 10px;
 }
 
-.nav li.active>a,.nav li>a:hover,.nav li>a:active {
+.nav li.active>a,.nav li>a:hover,.nav li.hover>a,.nav li>a:active {
 	color: black;
 }
 
@@ -73,7 +73,8 @@ a {
 	-o-transition: bottom 1s;
 }
 
-.nav .dropdown:hover .dropdown-inner {
+.nav .dropdown:hover .dropdown-inner,.nav .dropdown.reveal .dropdown-inner
+	{
 	bottom: -45px;
 }
 

@@ -33,8 +33,11 @@ Gallery.prototype = {
 
 		this.$element.find(".gallery-inner").click(this.galleryClick());
 		this.$element.find(".item").click(this.itemClick());
-		this.$element.find(".control.next").click(this.controlDirection(1));
-		this.$element.find(".control.prev").click(this.controlDirection(-1));
+
+		this.$nextControl = this.$element.find(".control.next");
+		this.$prevControl = this.$element.find(".control.prev");
+		this.$nextControl.click(this.showNext());
+		this.$prevControl.click(this.showPrev());
 
 		this.$element.find(".control.contact-sheet").click(
 				this.toggleContactSheet());
@@ -44,7 +47,7 @@ Gallery.prototype = {
 		this.activeIndex = activeIndex;
 		this.$active = $(this.$items[activeIndex]);
 
-		this.$section = this.$active.parent();
+		this.section = this.$active.parent()[0];
 
 		this.draw();
 	},
@@ -58,10 +61,19 @@ Gallery.prototype = {
 		if (this.galleryType == "contact-sheet") {
 			for ( var i = 0; i < this.size; i++)
 				this.positionContact(i, this.$items[i]);
+
+			this.nextIndex = this.incrementSheet(1);
+			this.prevIndex = this.incrementSheet(-1);
 		} else {
 			for ( var i = 0; i < this.size; i++)
 				this.positionSlide(i, this.$items[i]);
+
+			this.nextIndex = this.incrementSlide(1);
+			this.prevIndex = this.incrementSlide(-1);
 		}
+
+		this.nextSection = $(this.$items[this.nextIndex]).parent()[0];
+		this.prevSection = $(this.$items[this.prevIndex]).parent()[0];
 
 		this.$element.trigger("galleryupdate", this);
 	},
@@ -90,6 +102,23 @@ Gallery.prototype = {
 		$item.css("left", 100 * (i - this.activeIndex) + "%");
 	},
 
+	incrementSheet : function(increment) {
+		var nextIndex = this.activeIndex;
+		var activePage = this.itemIndexToPageSpec[this.activeIndex][0];
+		while (this.itemIndexToPageSpec[nextIndex][0] == activePage)
+			nextIndex = this.incrementIndex(nextIndex, increment);
+
+		return nextIndex;
+	},
+
+	incrementSlide : function(increment) {
+		return this.incrementIndex(this.activeIndex, increment);
+	},
+
+	incrementIndex : function(index, increment) {
+		return (this.size + index + increment) % this.size;
+	},
+
 	galleryClick : function() {
 		var that = this;
 		return function(event) {
@@ -97,7 +126,7 @@ Gallery.prototype = {
 				if (that.ignoreGalleryClick)
 					that.ignoreGalleryClick--;
 				else
-					that.incrementSlide(1);
+					that.setActive(that.nextIndex);
 		};
 	},
 
@@ -112,39 +141,27 @@ Gallery.prototype = {
 		};
 	},
 
-	controlDirection : function(increment) {
+	showNext : function() {
 		var that = this;
 		return function(event) {
 			event.preventDefault();
-
-			if (that.galleryType == "contact-sheet")
-				that.incrementSheet(increment);
-			else
-				that.incrementSlide(increment);
+			that.setActive(that.nextIndex);
 		};
 	},
 
-	incrementSheet : function(increment) {
-		var nextIndex = this.activeIndex;
-		var activePage = this.itemIndexToPageSpec[this.activeIndex][0];
-		while (this.itemIndexToPageSpec[nextIndex][0] == activePage)
-			nextIndex = this.incrementIndex(nextIndex, increment);
-
-		this.setActive(nextIndex);
-	},
-
-	incrementSlide : function(increment) {
-		this.setActive(this.incrementIndex(this.activeIndex, increment));
-	},
-
-	incrementIndex : function(index, increment) {
-		return (this.size + index + increment) % this.size;
+	showPrev : function() {
+		var that = this;
+		return function(event) {
+			event.preventDefault();
+			that.setActive(that.prevIndex);
+		};
 	},
 
 	toggleContactSheet : function() {
 		var that = this;
 		return function(event) {
 			event.preventDefault();
+
 			if (that.galleryType == "contact-sheet")
 				that.galleryType = "slideshow";
 			else
@@ -192,12 +209,11 @@ function initializeFromHash($gallery) {
 	$(hashItem).addClass("active");
 }
 
-function updateFromHash($gallery) {
+function updateFromHash(gallery) {
 	var parsedHash = parseHash();
 	var galleryType = parsedHash[0];
 	var hashItemTag = parsedHash[1];
 
-	var gallery = $gallery.data("gallery");
 	var hashItemIndex = Number(hashItemTag);
 
 	if (isNaN(hashItemIndex)) {
@@ -222,13 +238,53 @@ $(function() {
 	var $galleryMain = $("#gallery-main");
 	initializeFromHash($galleryMain);
 
-	var $sectionHeaders = $("#portfolios li");
+	$(".gallery").each(function(index, element) {
+		var $element = $(element);
+		var gallery = new Gallery($element);
+		$element.data("gallery", gallery);
+
+		if (element != $galleryMain[0])
+			gallery.init();
+	});
+	var galleryMain = $galleryMain.data("gallery");
+
+	var $sections = $("#portfolios");
+	var $sectionHeaders = $sections.children();
+	var $sectionsHeader = $sections.parent().parent();
+	var activeSection = undefined;
+	var previewSectionIncrement = 0;
+	var sectionRecentlyChanged = false;
+
+	function $sectionHeader(section) {
+		return $sectionHeaders.find('a[href$="#' + section.id + '"]').parent();
+	}
+
+	function drawSectionsTransient() {
+		var previewSection;
+		if (previewSectionIncrement > 0)
+			previewSection = galleryMain.nextSection;
+		else if (previewSectionIncrement < 0)
+			previewSection = galleryMain.prevSection;
+		else
+			previewSection = activeSection;
+
+		if (previewSection != activeSection || sectionRecentlyChanged)
+			$sectionsHeader.addClass("reveal");
+		else
+			$sectionsHeader.removeClass("reveal");
+
+		$sectionHeaders.removeClass("hover");
+		if (previewSection != activeSection)
+			$sectionHeader(previewSection).addClass("hover");
+	}
+
+	function unrevealSectionsOnChange() {
+		sectionRecentlyChanged = false;
+		drawSectionsTransient();
+	}
+
 	var ignoreHashChange = 0;
 	$galleryMain.on("galleryupdate", function(event, gallery) {
-		$sectionHeaders.removeClass("active");
-		$sectionHeaders.find('[href$="#' + gallery.$section[0].id + '"]')
-				.parent().addClass("active");
-
 		var itemTag = gallery.$active.attr("title");
 		if (!itemTag)
 			itemTag = gallery.activeIndex;
@@ -243,39 +299,64 @@ $(function() {
 			ignoreHashChange++;
 			window.location.hash = hash;
 		}
+
+		var gallerySection = gallery.section;
+		if (activeSection != gallerySection) {
+			if (activeSection) {
+				sectionRecentlyChanged = true;
+				setTimeout(unrevealSectionsOnChange, 2000);
+			}
+
+			$sectionHeaders.removeClass("active");
+			$sectionHeader(gallerySection).addClass("active");
+			activeSection = gallerySection;
+		}
+
+		drawSectionsTransient();
 	});
 
 	window.onhashchange = function() {
 		if (ignoreHashChange)
 			ignoreHashChange--;
 		else
-			updateFromHash($galleryMain);
+			updateFromHash(galleryMain);
 	};
 
-	$(".gallery").each(function(index, element) {
-		var $element = $(element);
-		var gallery = new Gallery($element);
-		$element.data("gallery", gallery);
-		gallery.init();
-	});
+	galleryMain.init();
 
-	$galleryMain.find(".gallery-inner").css("display", "block");
-
-	$(".nav a").click(function(event) {
-		if ($(this).parent().hasClass("active"))
-			event.preventDefault();
-	});
-
-	var galleryMain = $galleryMain.data("gallery");
 	$("#portfolios a").click(function(event) {
 		event.preventDefault();
 
 		var $this = $(this);
 		if (!$this.parent().hasClass("active")) {
 			var $section = $("section" + this.hash);
+			activeSection = $section[0];
 			var sectionItem = $section.children()[0];
 			var sectionItemIndex = galleryMain.$items.index(sectionItem);
 			galleryMain.setActive(sectionItemIndex);
 		}
 	});
+
+	galleryMain.$nextControl.mouseenter(function() {
+		previewSectionIncrement = 1;
+		drawSectionsTransient();
+	});
+	galleryMain.$prevControl.mouseenter(function() {
+		previewSectionIncrement = -1;
+		drawSectionsTransient();
+	});
+
+	function clearPreviewSection(nextSection) {
+		previewSectionIncrement = 0;
+		drawSectionsTransient();
+	}
+	galleryMain.$nextControl.mouseleave(clearPreviewSection);
+	galleryMain.$prevControl.mouseleave(clearPreviewSection);
+
+	$(".nav a").click(function(event) {
+		if ($(this).parent().hasClass("active"))
+			event.preventDefault();
+	});
+
+	$galleryMain.find(".gallery-inner").css("display", "block");
 });
