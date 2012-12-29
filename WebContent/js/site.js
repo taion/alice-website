@@ -33,8 +33,11 @@ Gallery.prototype = {
 
 		this.$element.find(".gallery-inner").click(this.galleryClick());
 		this.$element.find(".item").click(this.itemClick());
-		this.$element.find(".control.next").click(this.controlDirection(1));
-		this.$element.find(".control.prev").click(this.controlDirection(-1));
+
+		this.$nextControl = this.$element.find(".control.next");
+		this.$prevControl = this.$element.find(".control.prev");
+		this.$nextControl.click(this.showNext());
+		this.$prevControl.click(this.showPrev());
 
 		this.$element.find(".control.contact-sheet").click(
 				this.toggleContactSheet());
@@ -58,10 +61,19 @@ Gallery.prototype = {
 		if (this.galleryType == "contact-sheet") {
 			for ( var i = 0; i < this.size; i++)
 				this.positionContact(i, this.$items[i]);
+
+			this.nextIndex = this.incrementSheet(1);
+			this.prevIndex = this.incrementSheet(-1);
 		} else {
 			for ( var i = 0; i < this.size; i++)
 				this.positionSlide(i, this.$items[i]);
+
+			this.nextIndex = this.incrementSlide(1);
+			this.prevIndex = this.incrementSlide(-1);
 		}
+
+		this.$nextSection = $(this.$items[this.nextIndex]).parent();
+		this.$prevSection = $(this.$items[this.prevIndex]).parent();
 
 		this.$element.trigger("galleryupdate", this);
 	},
@@ -90,6 +102,23 @@ Gallery.prototype = {
 		$item.css("left", 100 * (i - this.activeIndex) + "%");
 	},
 
+	incrementSheet : function(increment) {
+		var nextIndex = this.activeIndex;
+		var activePage = this.itemIndexToPageSpec[this.activeIndex][0];
+		while (this.itemIndexToPageSpec[nextIndex][0] == activePage)
+			nextIndex = this.incrementIndex(nextIndex, increment);
+
+		return nextIndex;
+	},
+
+	incrementSlide : function(increment) {
+		return this.incrementIndex(this.activeIndex, increment);
+	},
+
+	incrementIndex : function(index, increment) {
+		return (this.size + index + increment) % this.size;
+	},
+
 	galleryClick : function() {
 		var that = this;
 		return function(event) {
@@ -97,7 +126,7 @@ Gallery.prototype = {
 				if (that.ignoreGalleryClick)
 					that.ignoreGalleryClick--;
 				else
-					that.incrementSlide(1);
+					that.secActive(that.nextIndex);
 		};
 	},
 
@@ -112,39 +141,27 @@ Gallery.prototype = {
 		};
 	},
 
-	controlDirection : function(increment) {
+	showNext : function() {
 		var that = this;
 		return function(event) {
 			event.preventDefault();
-
-			if (that.galleryType == "contact-sheet")
-				that.incrementSheet(increment);
-			else
-				that.incrementSlide(increment);
+			that.setActive(that.nextIndex);
 		};
 	},
 
-	incrementSheet : function(increment) {
-		var nextIndex = this.activeIndex;
-		var activePage = this.itemIndexToPageSpec[this.activeIndex][0];
-		while (this.itemIndexToPageSpec[nextIndex][0] == activePage)
-			nextIndex = this.incrementIndex(nextIndex, increment);
-
-		this.setActive(nextIndex);
-	},
-
-	incrementSlide : function(increment) {
-		this.setActive(this.incrementIndex(this.activeIndex, increment));
-	},
-
-	incrementIndex : function(index, increment) {
-		return (this.size + index + increment) % this.size;
+	showPrev : function() {
+		var that = this;
+		return function(event) {
+			event.preventDefault();
+			that.setActive(that.prevIndex);
+		};
 	},
 
 	toggleContactSheet : function() {
 		var that = this;
 		return function(event) {
 			event.preventDefault();
+
 			if (that.galleryType == "contact-sheet")
 				that.galleryType = "slideshow";
 			else
@@ -222,13 +239,36 @@ $(function() {
 	var $galleryMain = $("#gallery-main");
 	initializeFromHash($galleryMain);
 
-	var $sectionHeaders = $("#portfolios li");
+	var $sections = $("#portfolios");
+	var $sectionHeaders = $sections.children();
 	var ignoreHashChange = 0;
-	$galleryMain.on("galleryupdate", function(event, gallery) {
-		$sectionHeaders.removeClass("active");
-		$sectionHeaders.find('[href$="#' + gallery.$section[0].id + '"]')
-				.parent().addClass("active");
+	var activeSection = undefined;
 
+	var $sectionsHeader = $sections.parent().parent();
+	var revealedOnChange = false;
+	var revealedOnHover = false;
+	var revealSectionsOnChange = function() {
+		revealedOnChange = true;
+		$sectionsHeader.addClass("reveal");
+	};
+	var revealSectionsOnHover = function() {
+		revealedOnHover = true;
+		$sectionsHeader.addClass("reveal");
+	};
+	var maybeUnrevealSections = function() {
+		if (!(revealedOnChange || revealedOnHover))
+			$sectionsHeader.removeClass("reveal");
+	};
+	var unrevealSectionsOnChange = function() {
+		revealedOnChange = false;
+		maybeUnrevealSections();
+	};
+	var unrevealSectionsOnHover = function() {
+		revealedOnHover = false;
+		maybeUnrevealSections();
+	};
+
+	$galleryMain.on("galleryupdate", function(event, gallery) {
 		var itemTag = gallery.$active.attr("title");
 		if (!itemTag)
 			itemTag = gallery.activeIndex;
@@ -242,6 +282,19 @@ $(function() {
 		if (window.location.hash != hash) {
 			ignoreHashChange++;
 			window.location.hash = hash;
+		}
+
+		var gallerySection = gallery.$section[0];
+		if (activeSection != gallerySection) {
+			if (activeSection) {
+				revealSectionsOnChange();
+				setTimeout(unrevealSectionsOnChange, 2000);
+			}
+
+			$sectionHeaders.removeClass("active");
+			$sectionHeaders.find('[href$="#' + gallerySection.id + '"]')
+					.parent().addClass("active");
+			activeSection = gallerySection;
 		}
 	});
 
@@ -273,9 +326,23 @@ $(function() {
 		var $this = $(this);
 		if (!$this.parent().hasClass("active")) {
 			var $section = $("section" + this.hash);
+			activeSection = $section[0];
 			var sectionItem = $section.children()[0];
 			var sectionItemIndex = galleryMain.$items.index(sectionItem);
 			galleryMain.setActive(sectionItemIndex);
 		}
 	});
+
+	var maybeRevealSectionsOnHover = function(nextSection) {
+		if (activeSection != nextSection)
+			revealSectionsOnHover();
+	};
+	galleryMain.$nextControl.mouseenter(function() {
+		maybeRevealSectionsOnHover(galleryMain.$nextSection[0]);
+	});
+	galleryMain.$prevControl.mouseenter(function() {
+		maybeRevealSectionsOnHover(galleryMain.$prevSection[0]);
+	});
+	galleryMain.$nextControl.mouseleave(unrevealSectionsOnHover);
+	galleryMain.$prevControl.mouseleave(unrevealSectionsOnHover);
 });
