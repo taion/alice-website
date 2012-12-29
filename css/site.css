@@ -1,0 +1,251 @@
+a {
+	transition: color 0.5s;
+	-moz-transition: color 0.5s;
+	-webkit-transition: color 0.5s;
+	-o-transition: color 0.5s;
+}
+
+.nav {
+	font-family: "ltc-bodoni-175", serif;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	padding-top: 30px;
+	margin-bottom: 60px;
+	background: white;
+	position: relative;
+	z-index: 2;
+	font-size: 35px;
+	line-height: 35px;
+	text-transform: uppercase;
+}
+
+.nav * {
+	background: white;
+	-webkit-font-smoothing: antialiased;
+}
+
+.nav .container {
+	display: table;
+	margin: auto;
+}
+
+.nav .brand {
+	float: left;
+	margin: 5px 5px 5px 0;
+	padding: 5px 15px 5px 10px;
+	border-right: 1px black solid;
+}
+
+.nav ul {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	display: table;
+}
+
+.nav li {
+	display: block;
+	float: left;
+}
+
+.nav li a {
+	color: grey;
+	text-decoration: none;
+	display: block;
+	padding: 10px;
+}
+
+.nav li.active>a,.nav li>a:hover,.nav li>a:active {
+	color: black;
+}
+
+.nav .dropdown-inner {
+	position: absolute;
+	z-index: -1;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	font-size: 25px;
+	line-height: 25px;
+	transition: bottom 1s;
+	-moz-transition: bottom 1s;
+	-webkit-transition: bottom 1s;
+	-o-transition: bottom 1s;
+}
+
+.nav .dropdown:hover .dropdown-inner {
+	bottom: -45px;
+}
+
+.container:after {
+	content: "";
+	clear: both;
+	display: block;
+}
+
+.gallery {
+	position: relative;
+}
+
+.gallery-inner-holder {
+	position: relative;
+	padding-left: 60px;
+	padding-right: 60px;
+	width: 860px;
+	height: 774px;
+	margin-bottom: 80px;
+}
+
+.gallery-inner {
+	width: 100%;
+	height: 100%;
+	position: relative;
+	overflow: hidden;
+	position: relative;
+}
+
+.gallery[gallery-type="slideshow"] .gallery-inner {
+	cursor: pointer;
+}
+
+.gallery section {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	width: 100%;
+}
+
+.gallery .item {
+	position: absolute;
+	z-index: 1;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: contain;
+	transition: width 0.5s, height 0.5s, left 0.5s, top 0.5s, margin 0.5s;
+	-moz-transition: width 0.5s, height 0.5s, left 0.5s, top 0.5s, margin
+		0.5s;
+	-webkit-transition: width 0.5s, height 0.5s, left 0.5s, top 0.5s, margin
+		0.5s;
+	-o-transition: width 0.5s, height 0.5s, left 0.5s, top 0.5s, margin 0.5s;
+	background-position: center;
+	background-position: center;
+}
+
+.gallery[gallery-type="slideshow"] .item {
+	width: 100%;
+	height: 100%;
+}
+
+.gallery[gallery-type="contact-sheet"] .item {
+	width: 20%;
+	height: 20%;
+	margin: 2.5%;
+	cursor: pointer;
+}
+
+.gallery .control {
+	position: absolute;
+	display: block;
+	text-decoration: none;
+	color: grey;
+	font-size: 60px;
+	font-family: 'open-sans', sans-serif;
+	font-weight: 300;
+	cursor: pointer;
+	text-align: center;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+.gallery .control.prev,.gallery .control.next {
+	top: 50%;
+	width: 20px;
+	height: 100px;
+	margin-top: -70px;
+	padding: 20px;
+	font-family: 'open-sans', sans-serif;
+}
+
+.gallery .control:hover {
+	color: black;
+}
+
+.gallery .control.prev {
+	left: 0px;
+}
+
+.gallery .control.prev:before {
+	content: "\2039"
+}
+
+.gallery .control.next {
+	right: 0px;
+}
+
+.gallery .control.next:before {
+	content: '\203A'
+}
+
+.gallery .control.contact-sheet {
+	bottom: -80px;
+	left: 50%;
+	margin-left: -40px;
+	padding: 22px;
+}
+
+.contact-sheet-icon {
+	height: 36px;
+	width: 36px;
+	transition: background-color 0.5s;
+	-moz-transition: background-color 0.5s;
+	-webkit-transition: background-color 0.5s;
+	-o-transition: background-color 0.5s;
+}
+
+.gallery[gallery-type="slideshow"] .contact-sheet-icon,.gallery[gallery-type="contact-sheet"] .control.contact-sheet:hover .contact-sheet-icon
+	{
+	background-color: grey;
+}
+
+.gallery[gallery-type="slideshow"]  .control.contact-sheet:hover .contact-sheet-icon,.gallery[gallery-type="contact-sheet"] .contact-sheet-icon
+	{
+	background-color: black;
+}
+
+.contact-sheet-icon:before,.gallery .contact-sheet-icon:after {
+	content: "";
+	display: block;
+	position: absolute;
+	background-color: white;
+	display: block;
+}
+
+.contact-sheet-icon:before {
+	width: 4px;
+	height: 40px;
+	left: 50%;
+	margin-top: -2px;
+	margin-left: -2px;
+}
+
+.contact-sheet-icon:after {
+	width: 40px;
+	height: 4px;
+	top: 50%;
+	margin-top: -2px;
+	margin-left: -2px;
+}
+
+#gallery-main {
+	width: 980px;
+	margin: auto;
+	padding-bottom: 80px;
+}
+
+#gallery-main .gallery-inner {
+	display: none;
+}
