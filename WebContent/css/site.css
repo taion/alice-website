@@ -121,14 +121,12 @@ a {
 	background-position: center;
 	background-repeat: no-repeat;
 	background-size: contain;
-	transition: width 0.5s, height 0.5s, left 0.5s, top 0.5s, margin 0.5s,
-		box-shadow 0.5s;
+	transition: width 0.5s, height 0.5s, left 0.5s, top 0.5s, margin 0.5s;
 	-moz-transition: width 0.5s, height 0.5s, left 0.5s, top 0.5s, margin
-		0.5s, box-shadow 0.5s;
+		0.5s;
 	-webkit-transition: width 0.5s, height 0.5s, left 0.5s, top 0.5s, margin
-		0.5s, box-shadow 0.5s;
-	-o-transition: width 0.5s, height 0.5s, left 0.5s, top 0.5s, margin 0.5s,
-		box-shadow 0.5s;
+		0.5s;
+	-o-transition: width 0.5s, height 0.5s, left 0.5s, top 0.5s, margin 0.5s;
 	background-position: center;
 	background-position: center;
 }
@@ -143,13 +141,6 @@ a {
 	height: 20%;
 	margin: 2.5%;
 	cursor: pointer;
-}
-
-.gallery[gallery-type="contact-sheet"] .gallery-inner:hover .item:hover
-	{
-	box-shadow: 0 0 20px grey;
-	-moz-box-shadow: 0 0 20px grey;
-	-webkit-box-shadow: 0 0 20px grey;
 }
 
 .gallery .control {
@@ -173,9 +164,10 @@ a {
 .gallery .control.prev,.gallery .control.next {
 	top: 50%;
 	width: 20px;
-	height: 80px;
-	margin-top: -60px;
+	height: 100px;
+	margin-top: -70px;
 	padding: 20px;
+	font-family: 'open-sans', sans-serif;
 }
 
 .gallery .control:hover {
