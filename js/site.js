@@ -253,7 +253,7 @@ $(function() {
 	var $sectionsHeader = $sections.parent().parent();
 	var activeSection = undefined;
 	var previewSectionIncrement = 0;
-	var sectionRecentlyChanged = false;
+	var sectionRecentlyChanged = 0;
 
 	function $sectionHeader(section) {
 		return $sectionHeaders.find('a[href$="#' + section.id + '"]').parent();
@@ -278,8 +278,8 @@ $(function() {
 			$sectionHeader(previewSection).addClass("hover");
 	}
 
-	function unrevealSectionsOnChange() {
-		sectionRecentlyChanged = false;
+	function maybeUnrevealSectionsOnChange() {
+		sectionRecentlyChanged--;
 		drawSectionsTransient();
 	}
 
@@ -303,8 +303,8 @@ $(function() {
 		var gallerySection = gallery.section;
 		if (activeSection != gallerySection) {
 			if (activeSection) {
-				sectionRecentlyChanged = true;
-				setTimeout(unrevealSectionsOnChange, 2000);
+				sectionRecentlyChanged++;
+				setTimeout(maybeUnrevealSectionsOnChange, 2000);
 			}
 
 			$sectionHeaders.removeClass("active");
