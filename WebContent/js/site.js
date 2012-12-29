@@ -47,7 +47,7 @@ Gallery.prototype = {
 		this.activeIndex = activeIndex;
 		this.$active = $(this.$items[activeIndex]);
 
-		this.$section = this.$active.parent();
+		this.section = this.$active.parent()[0];
 
 		this.draw();
 	},
@@ -72,8 +72,8 @@ Gallery.prototype = {
 			this.prevIndex = this.incrementSlide(-1);
 		}
 
-		this.$nextSection = $(this.$items[this.nextIndex]).parent();
-		this.$prevSection = $(this.$items[this.prevIndex]).parent();
+		this.nextSection = $(this.$items[this.nextIndex]).parent()[0];
+		this.prevSection = $(this.$items[this.prevIndex]).parent()[0];
 
 		this.$element.trigger("galleryupdate", this);
 	},
@@ -126,7 +126,7 @@ Gallery.prototype = {
 				if (that.ignoreGalleryClick)
 					that.ignoreGalleryClick--;
 				else
-					that.secActive(that.nextIndex);
+					that.setActive(that.nextIndex);
 		};
 	},
 
@@ -209,12 +209,11 @@ function initializeFromHash($gallery) {
 	$(hashItem).addClass("active");
 }
 
-function updateFromHash($gallery) {
+function updateFromHash(gallery) {
 	var parsedHash = parseHash();
 	var galleryType = parsedHash[0];
 	var hashItemTag = parsedHash[1];
 
-	var gallery = $gallery.data("gallery");
 	var hashItemIndex = Number(hashItemTag);
 
 	if (isNaN(hashItemIndex)) {
@@ -239,35 +238,52 @@ $(function() {
 	var $galleryMain = $("#gallery-main");
 	initializeFromHash($galleryMain);
 
+	$(".gallery").each(function(index, element) {
+		var $element = $(element);
+		var gallery = new Gallery($element);
+		$element.data("gallery", gallery);
+
+		if (element != $galleryMain[0])
+			gallery.init();
+	});
+	var galleryMain = $galleryMain.data("gallery");
+
 	var $sections = $("#portfolios");
 	var $sectionHeaders = $sections.children();
-	var ignoreHashChange = 0;
-	var activeSection = undefined;
-
 	var $sectionsHeader = $sections.parent().parent();
-	var revealedOnChange = false;
-	var revealedOnHover = false;
-	var revealSectionsOnChange = function() {
-		revealedOnChange = true;
-		$sectionsHeader.addClass("reveal");
-	};
-	var revealSectionsOnHover = function() {
-		revealedOnHover = true;
-		$sectionsHeader.addClass("reveal");
-	};
-	var maybeUnrevealSections = function() {
-		if (!(revealedOnChange || revealedOnHover))
-			$sectionsHeader.removeClass("reveal");
-	};
-	var unrevealSectionsOnChange = function() {
-		revealedOnChange = false;
-		maybeUnrevealSections();
-	};
-	var unrevealSectionsOnHover = function() {
-		revealedOnHover = false;
-		maybeUnrevealSections();
-	};
+	var activeSection = undefined;
+	var previewSectionIncrement = 0;
+	var sectionRecentlyChanged = false;
 
+	function $sectionHeader(section) {
+		return $sectionHeaders.find('a[href$="#' + section.id + '"]').parent();
+	}
+
+	function drawSectionsTransient() {
+		var previewSection;
+		if (previewSectionIncrement > 0)
+			previewSection = galleryMain.nextSection;
+		else if (previewSectionIncrement < 0)
+			previewSection = galleryMain.prevSection;
+		else
+			previewSection = activeSection;
+
+		if (previewSection != activeSection || sectionRecentlyChanged)
+			$sectionsHeader.addClass("reveal");
+		else
+			$sectionsHeader.removeClass("reveal");
+
+		$sectionHeaders.removeClass("hover");
+		if (previewSection != activeSection)
+			$sectionHeader(previewSection).addClass("hover");
+	}
+
+	function unrevealSectionsOnChange() {
+		sectionRecentlyChanged = false;
+		drawSectionsTransient();
+	}
+
+	var ignoreHashChange = 0;
 	$galleryMain.on("galleryupdate", function(event, gallery) {
 		var itemTag = gallery.$active.attr("title");
 		if (!itemTag)
@@ -284,42 +300,30 @@ $(function() {
 			window.location.hash = hash;
 		}
 
-		var gallerySection = gallery.$section[0];
+		var gallerySection = gallery.section;
 		if (activeSection != gallerySection) {
 			if (activeSection) {
-				revealSectionsOnChange();
+				sectionRecentlyChanged = true;
 				setTimeout(unrevealSectionsOnChange, 2000);
 			}
 
 			$sectionHeaders.removeClass("active");
-			$sectionHeaders.find('[href$="#' + gallerySection.id + '"]')
-					.parent().addClass("active");
+			$sectionHeader(gallerySection).addClass("active");
 			activeSection = gallerySection;
 		}
+
+		drawSectionsTransient();
 	});
 
 	window.onhashchange = function() {
 		if (ignoreHashChange)
 			ignoreHashChange--;
 		else
-			updateFromHash($galleryMain);
+			updateFromHash(galleryMain);
 	};
 
-	$(".gallery").each(function(index, element) {
-		var $element = $(element);
-		var gallery = new Gallery($element);
-		$element.data("gallery", gallery);
-		gallery.init();
-	});
+	galleryMain.init();
 
-	$galleryMain.find(".gallery-inner").css("display", "block");
-
-	$(".nav a").click(function(event) {
-		if ($(this).parent().hasClass("active"))
-			event.preventDefault();
-	});
-
-	var galleryMain = $galleryMain.data("gallery");
 	$("#portfolios a").click(function(event) {
 		event.preventDefault();
 
@@ -333,16 +337,26 @@ $(function() {
 		}
 	});
 
-	var maybeRevealSectionsOnHover = function(nextSection) {
-		if (activeSection != nextSection)
-			revealSectionsOnHover();
-	};
 	galleryMain.$nextControl.mouseenter(function() {
-		maybeRevealSectionsOnHover(galleryMain.$nextSection[0]);
+		previewSectionIncrement = 1;
+		drawSectionsTransient();
 	});
 	galleryMain.$prevControl.mouseenter(function() {
-		maybeRevealSectionsOnHover(galleryMain.$prevSection[0]);
+		previewSectionIncrement = -1;
+		drawSectionsTransient();
 	});
-	galleryMain.$nextControl.mouseleave(unrevealSectionsOnHover);
-	galleryMain.$prevControl.mouseleave(unrevealSectionsOnHover);
+
+	function clearPreviewSection(nextSection) {
+		previewSectionIncrement = 0;
+		drawSectionsTransient();
+	}
+	galleryMain.$nextControl.mouseleave(clearPreviewSection);
+	galleryMain.$prevControl.mouseleave(clearPreviewSection);
+
+	$(".nav a").click(function(event) {
+		if ($(this).parent().hasClass("active"))
+			event.preventDefault();
+	});
+
+	$galleryMain.find(".gallery-inner").css("display", "block");
 });

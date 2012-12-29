@@ -55,7 +55,7 @@ a {
 	padding: 10px;
 }
 
-.nav li.active>a,.nav li>a:hover,.nav li>a:active {
+.nav li.active>a,.nav li>a:hover,.nav li.hover>a,.nav li>a:active {
 	color: black;
 }
 
