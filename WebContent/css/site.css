@@ -89,12 +89,11 @@ a {
 }
 
 .gallery-inner-holder {
-	position: relative;
-	padding-left: 60px;
-	padding-right: 60px;
-	width: 860px;
-	height: 774px;
-	margin-bottom: 80px;
+	position: absolute;
+	top: 0;
+	left: 60px;
+	right: 60px;
+	bottom: 80px;
 }
 
 .gallery-inner {
@@ -102,7 +101,6 @@ a {
 	height: 100%;
 	position: relative;
 	overflow: hidden;
-	position: relative;
 }
 
 .gallery[gallery-type="slideshow"] .gallery-inner {
@@ -176,7 +174,7 @@ a {
 }
 
 .gallery .control.prev {
-	left: 0px;
+	left: -60px;
 }
 
 .gallery .control.prev:before {
@@ -184,7 +182,7 @@ a {
 }
 
 .gallery .control.next {
-	right: 0px;
+	right: -60px;
 }
 
 .gallery .control.next:before {
@@ -242,9 +240,15 @@ a {
 }
 
 #gallery-main {
-	width: 980px;
-	margin: auto;
-	padding-bottom: 80px;
+	position: absolute;
+	top: 140px;
+	left: 0;
+	right: 0;
+	bottom: 20px;
+	max-width: 980px;
+	max-height: 830px;
+	margin-left: auto;
+	margin-right: auto;
 }
 
 #gallery-main .gallery-inner {
