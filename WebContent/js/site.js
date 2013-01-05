@@ -330,7 +330,6 @@ $(function() {
 		var $this = $(this);
 		if (!$this.parent().hasClass("active")) {
 			var $section = $("section" + this.hash);
-			activeSection = $section[0];
 			var sectionItem = $section.children()[0];
 			var sectionItemIndex = galleryMain.$items.index(sectionItem);
 			galleryMain.setActive(sectionItemIndex);

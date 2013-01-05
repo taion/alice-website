@@ -6,10 +6,10 @@ a {
 }
 
 .nav {
-	font-family: "ltc-bodoni-175", serif;
+	font-family: "brandon-grotesque", sans-serif;
 	text-transform: uppercase;
 	letter-spacing: 1px;
-	padding-top: 30px;
+	padding-top: 40px;
 	margin-bottom: 60px;
 	background: white;
 	position: relative;
@@ -31,8 +31,8 @@ a {
 
 .nav .brand {
 	float: left;
-	margin: 5px 5px 5px 0;
-	padding: 5px 15px 5px 10px;
+	margin: 5px 10px 5px 0;
+	padding: 5px 25px 5px 20px;
 	border-right: 1px black solid;
 }
 
@@ -49,14 +49,14 @@ a {
 }
 
 .nav li a {
-	color: grey;
+	color: black;
 	text-decoration: none;
 	display: block;
-	padding: 10px;
+	padding: 10px 15px 10px 15px;
 }
 
-.nav li.active>a,.nav li>a:hover,.nav li.hover>a,.nav li>a:active {
-	color: black;
+.nav .dropdown-inner li.active>a,.nav li>a:hover,.nav li.hover>a,.nav .dropdown-inner li>a:active {
+	color: grey;
 }
 
 .nav .dropdown-inner {
@@ -128,6 +128,7 @@ a {
 	-o-transition: width 0.5s, height 0.5s, left 0.5s, top 0.5s, margin 0.5s;
 	background-position: center;
 	background-position: center;
+	-webkit-transform: translateZ(0);
 }
 
 .gallery[gallery-type="slideshow"] .item {
@@ -241,7 +242,7 @@ a {
 
 #gallery-main {
 	position: absolute;
-	top: 140px;
+	top: 150px;
 	left: 0;
 	right: 0;
 	bottom: 20px;
