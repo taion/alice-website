@@ -89,17 +89,17 @@ Gallery.prototype = {
 		var rowIndex = Math.floor(contactIndex / this.CONTACTS_PER_ROW);
 		var colIndex = contactIndex % this.CONTACTS_PER_ROW;
 
-		var top = (rowIndex / this.CONTACTS_PER_COL) * 100 + "%";
-		var left = (relPage + colIndex / this.CONTACTS_PER_ROW) * 100 + "%";
+		var top = (rowIndex / this.CONTACTS_PER_COL) * 100 - 35 + "%";
+		var left = (relPage + colIndex / this.CONTACTS_PER_ROW) * 100 - 35 + "%";
 
-		$item.css("top", top);
-		$item.css("left", left);
+		var transform = "translate3d(" + left + ", " + top + ", 0) scale3d(0.2, 0.2, 1)";
+		$item.css("transform", transform);
 	},
 
 	positionSlide : function(i, item) {
 		var $item = $(item);
-		$item.css("top", 0);
-		$item.css("left", 100 * (i - this.activeIndex) + "%");
+		var left = 100 * (i - this.activeIndex) + "%";
+		$item.css("transform", "translate3d(" + left + ", 0, 0)");
 	},
 
 	incrementSheet : function(increment) {

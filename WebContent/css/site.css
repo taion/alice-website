@@ -41,6 +41,7 @@ a {
 	padding: 0;
 	margin: 0;
 	display: table;
+	float: left;
 }
 
 .nav li {
@@ -55,7 +56,8 @@ a {
 	padding: 10px 15px 10px 15px;
 }
 
-.nav .dropdown-inner li.active>a,.nav li>a:hover,.nav li.hover>a,.nav .dropdown-inner li>a:active {
+.nav .dropdown-inner li.active>a,.nav li>a:hover,.nav li.hover>a,.nav .dropdown-inner li>a:active
+	{
 	color: grey;
 }
 
@@ -78,6 +80,10 @@ a {
 	bottom: -45px;
 }
 
+.nav .dropdown-inner ul {
+	float: none;
+}
+
 .container:after {
 	content: "";
 	clear: both;
@@ -86,6 +92,7 @@ a {
 
 .gallery {
 	position: relative;
+	transition: bottom 1s;
 }
 
 .gallery-inner-holder {
@@ -120,26 +127,21 @@ a {
 	background-position: center;
 	background-repeat: no-repeat;
 	background-size: contain;
-	transition: width 0.5s, height 0.5s, left 0.5s, top 0.5s, margin 0.5s;
-	-moz-transition: width 0.5s, height 0.5s, left 0.5s, top 0.5s, margin
-		0.5s;
-	-webkit-transition: width 0.5s, height 0.5s, left 0.5s, top 0.5s, margin
-		0.5s;
-	-o-transition: width 0.5s, height 0.5s, left 0.5s, top 0.5s, margin 0.5s;
+	transition: all 0.5s;
+	-moz-transition: all 0.5s;
+	-webkit-transition: all 0.5s;
+	-o-transition: all 0.5s;
 	background-position: center;
 	background-position: center;
-	-webkit-transform: translateZ(0);
-}
-
-.gallery[gallery-type="slideshow"] .item {
 	width: 100%;
 	height: 100%;
+	transform: translate3d(0, 0, 0);
+	-moz-transform: translate3d(0, 0, 0);
+	-webkit-transform: translate3d(0, 0, 0);
+	-o-transform: translate3d(0, 0, 0);
 }
 
 .gallery[gallery-type="contact-sheet"] .item {
-	width: 20%;
-	height: 20%;
-	margin: 2.5%;
 	cursor: pointer;
 }
 
@@ -147,7 +149,7 @@ a {
 	position: absolute;
 	display: block;
 	text-decoration: none;
-	color: grey;
+	color: black;
 	font-size: 60px;
 	font-family: 'open-sans', sans-serif;
 	font-weight: 300;
@@ -171,7 +173,7 @@ a {
 }
 
 .gallery .control:hover {
-	color: black;
+	color: grey;
 }
 
 .gallery .control.prev {
@@ -208,12 +210,12 @@ a {
 
 .gallery[gallery-type="slideshow"] .contact-sheet-icon,.gallery[gallery-type="contact-sheet"] .control.contact-sheet:hover .contact-sheet-icon
 	{
-	background-color: grey;
+	background-color: black;
 }
 
 .gallery[gallery-type="slideshow"]  .control.contact-sheet:hover .contact-sheet-icon,.gallery[gallery-type="contact-sheet"] .contact-sheet-icon
 	{
-	background-color: black;
+	background-color: grey;
 }
 
 .contact-sheet-icon:before,.gallery .contact-sheet-icon:after {
