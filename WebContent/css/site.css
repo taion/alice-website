@@ -69,15 +69,18 @@ a {
 	bottom: 0;
 	font-size: 25px;
 	line-height: 25px;
-	transition: bottom 1s;
-	-moz-transition: bottom 1s;
-	-webkit-transition: bottom 1s;
-	-o-transition: bottom 1s;
+	transition: all 1s;
+	-moz-transition: all 1s;
+	-webkit-transition: all 1s;
+	-o-transition: all 1s;
 }
 
 .nav .dropdown:hover .dropdown-inner,.nav .dropdown.reveal .dropdown-inner
 	{
-	bottom: -45px;
+	transform: translateY(45px);
+	-moz-transform: translateY(45px);
+	-webkit-transform: translateY(45px);
+	-o-transform: translateY(45px);
 }
 
 .nav .dropdown-inner ul {
@@ -109,6 +112,16 @@ a {
 	overflow: hidden;
 }
 
+.gallery .item-holder {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	transition: all 0.5s;
+	-moz-transition: all 0.5s;
+	-webkit-transition: all 0.5s;
+	-o-transition: all 0.5s;
+}
+
 .gallery section {
 	position: absolute;
 	width: 100%;
@@ -121,20 +134,13 @@ a {
 	background-position: center;
 	background-repeat: no-repeat;
 	background-size: contain;
-	transition: all 0.5s;
-	-moz-transition: all 0.5s;
-	-webkit-transition: all 0.5s;
-	-o-transition: all 0.5s;
 	width: 100%;
 	height: 100%;
-	transform: translate3d(0, 0, 0);
-	-moz-transform: translate3d(0, 0, 0);
-	-webkit-transform: translate3d(0, 0, 0);
-	-o-transform: translate3d(0, 0, 0);
-}
-
-.gallery[gallery-type="contact-sheet"] .item {
 	cursor: pointer;
+	transition: transform 0.5s;
+	-moz-transition: transform 0.5s;
+	-webkit-transition: all 0.5s;
+	-o-transition: all 0.5s;
 }
 
 .gallery .control {

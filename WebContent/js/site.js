@@ -15,6 +15,9 @@
 	Gallery.prototype = {
 		init : function() {
 			this.galleryTypeDrawn = null;
+			this.offsetX = null;
+			this.offsetY = null;
+
 			if (this.$element.hasClass(CONTACT_SHEET))
 				this.galleryType = CONTACT_SHEET;
 			else
@@ -22,6 +25,7 @@
 
 			this.$items = this.$element.find(".item");
 			this.size = this.$items.length;
+			this.$itemHolder = this.$element.find(".item-holder");
 
 			this.itemIndexToPageSpec = [];
 			var $sections = this.$element.find("section");
@@ -49,9 +53,9 @@
 					this.toggleContactSheet());
 		},
 
-		setActive : function(activeIndex) {
-			this.activeIndex = activeIndex;
-			this.$active = $(this.$items[activeIndex]);
+		setActive : function(indexActive) {
+			this.indexActive = indexActive;
+			this.$active = $(this.$items[indexActive]);
 
 			this.section = this.$active.parent()[0];
 
@@ -59,21 +63,39 @@
 		},
 
 		draw : function() {
-			this.$element.attr("gallery-type", this.galleryType);
-
 			this.$items.filter(".active").removeClass("active");
 			this.$active.addClass("active");
 
+			// if (this.galleryTypeDrawn != this.galleryType) {
+			// this.setOffsets();
+			//
 			if (this.galleryType == CONTACT_SHEET) {
 				for ( var i = 0; i < this.size; i++)
 					this.positionContact(i, this.$items[i]);
+			} else {
+				for ( var i = 0; i < this.size; i++)
+					this.positionSlide(i, this.$items[i]);
+			}
+			// this.galleryTypeDrawn = this.galleryType;
+			// }
+
+			if (this.galleryType == CONTACT_SHEET) {
+				var activePage = this.itemIndexToPageSpec[this.indexActive][0];
+				var x = -this.offsetX - 125 * CONTACTS_PER_COL * activePage
+						- 187.5;
+				var y = -this.offsetY - 187.5;
+				this.$itemHolder.css("transform", "scale(0.2) translate(" + x
+						+ "%, " + y + "%)");
 
 				this.nextIndex = this.incrementSheet(1);
 				this.prevIndex = this.incrementSheet(-1);
 			} else {
-				for ( var i = 0; i < this.size; i++)
-					this.positionSlide(i, this.$items[i]);
-
+				// var x = this.offsetX - 125 * this.indexActive;
+				// var y = -this.offsetY;
+				// this.$itemHolder.css("transform", "translate(" + x + "%, " +
+				// y
+				// + "%)");
+				//
 				this.nextIndex = this.incrementSlide(1);
 				this.prevIndex = this.incrementSlide(-1);
 			}
@@ -90,34 +112,59 @@
 			this.$element.trigger("galleryupdate", this);
 		},
 
+		setOffsets : function() {
+			if (this.galleryTypeDrawn == null) {
+				this.offsetX = 0;
+				this.offsetY = 0;
+			} else {
+				var activeSpec = this.itemIndexToPageSpec[this.indexActive];
+				var pageIndex = activeSpec[0];
+				var contactIndex = activeSpec[1];
+				var rowIndex = Math.floor(contactIndex / CONTACTS_PER_ROW);
+				var colIndex = contactIndex % CONTACTS_PER_ROW;
+
+				if (this.galleryType == CONTACT_SHEET
+						&& this.galleryTypeDrawn == SLIDESHOW) {
+					this.offsetX += (this.indexActive - colIndex - CONTACTS_PER_COL
+							* pageIndex) * 125;
+					this.offsetY -= rowIndex * 125;
+
+				} else if (this.galleryType == SLIDESHOW
+						&& this.galleryTypeDrawn == CONTACT_SHEET) {
+					this.offsetX += (CONTACTS_PER_COL * pageIndex + colIndex - this.indexActive) * 125;
+					this.offsetY += rowIndex * 125;
+				}
+			}
+		},
+
 		positionContact : function(i, item) {
 			var $item = $(item);
 			var pageSpec = this.itemIndexToPageSpec[i];
 			var pageIndex = pageSpec[0];
-			var activePageIndex = this.itemIndexToPageSpec[this.activeIndex][0];
 			var contactIndex = pageSpec[1];
 
-			var relPage = pageIndex - activePageIndex;
 			var rowIndex = Math.floor(contactIndex / CONTACTS_PER_ROW);
 			var colIndex = contactIndex % CONTACTS_PER_ROW;
 
-			var top = (rowIndex / CONTACTS_PER_COL) * 100 - 35 + "%";
-			var left = (relPage + colIndex / CONTACTS_PER_ROW) * 100 - 35 + "%";
+			var x = this.offsetX + (CONTACTS_PER_COL * pageIndex + colIndex)
+					* 125;
+			var y = this.offsetY + rowIndex * 125;
 
-			var transform = "translate3d(" + left + ", " + top
-					+ ", 0) scale3d(0.2, 0.2, 1)";
+			var transform = "translate(" + x + "%, " + y + "%)";
 			$item.css("transform", transform);
 		},
 
 		positionSlide : function(i, item) {
 			var $item = $(item);
-			var left = 100 * (i - this.activeIndex) + "%";
-			$item.css("transform", "translate3d(" + left + ", 0, 0)");
+			var x = 125 * (i - this.indexActive);
+			// $item.css("transform", "translate(" + x + "%, " + this.offsetY
+			// + "%)");
+			$item.css("transform", "translateX(" + x + "%) translateZ(0)");
 		},
 
 		incrementSheet : function(increment) {
-			var nextIndex = this.activeIndex;
-			var activePage = this.itemIndexToPageSpec[this.activeIndex][0];
+			var nextIndex = this.indexActive;
+			var activePage = this.itemIndexToPageSpec[this.indexActive][0];
 			while (this.itemIndexToPageSpec[nextIndex][0] == activePage)
 				nextIndex = this.incrementIndex(nextIndex, increment);
 
@@ -125,7 +172,7 @@
 		},
 
 		incrementSlide : function(increment) {
-			return this.incrementIndex(this.activeIndex, increment);
+			return this.incrementIndex(this.indexActive, increment);
 		},
 
 		incrementIndex : function(index, increment) {
@@ -233,7 +280,7 @@
 				hashItemIndex = 0;
 		}
 
-		if (hashItemIndex != gallery.activeIndex) {
+		if (hashItemIndex != gallery.indexActive) {
 			gallery.galleryType = galleryType;
 			gallery.setActive(hashItemIndex);
 		} else if (gallery.galleryType != galleryType) {
@@ -296,7 +343,7 @@
 		$galleryMain.on("galleryupdate", function(event, gallery) {
 			var itemTag = gallery.$active.attr("title");
 			if (!itemTag)
-				itemTag = gallery.activeIndex;
+				itemTag = gallery.indexActive;
 
 			var hash;
 			if (gallery.galleryType == CONTACT_SHEET)
