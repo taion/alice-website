@@ -92,7 +92,6 @@ a {
 
 .gallery {
 	position: relative;
-	transition: bottom 1s;
 }
 
 .gallery-inner-holder {
@@ -110,15 +109,10 @@ a {
 	overflow: hidden;
 }
 
-.gallery[gallery-type="slideshow"] .gallery-inner {
-	cursor: pointer;
-}
-
 .gallery section {
 	position: absolute;
 	width: 100%;
 	height: 100%;
-	width: 100%;
 }
 
 .gallery .item {
@@ -131,8 +125,6 @@ a {
 	-moz-transition: all 0.5s;
 	-webkit-transition: all 0.5s;
 	-o-transition: all 0.5s;
-	background-position: center;
-	background-position: center;
 	width: 100%;
 	height: 100%;
 	transform: translate3d(0, 0, 0);
@@ -208,12 +200,12 @@ a {
 	-o-transition: background-color 0.5s;
 }
 
-.gallery[gallery-type="slideshow"] .contact-sheet-icon,.gallery[gallery-type="contact-sheet"] .control.contact-sheet:hover .contact-sheet-icon
+.gallery.slideshow .contact-sheet-icon,.gallery.contact-sheet .control.contact-sheet:hover .contact-sheet-icon
 	{
 	background-color: black;
 }
 
-.gallery[gallery-type="slideshow"]  .control.contact-sheet:hover .contact-sheet-icon,.gallery[gallery-type="contact-sheet"] .contact-sheet-icon
+.gallery.slideshow .control.contact-sheet:hover .contact-sheet-icon,.gallery.contact-sheet .contact-sheet-icon
 	{
 	background-color: grey;
 }
