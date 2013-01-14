@@ -18,6 +18,7 @@
 		init : function() {
 			this.galleryTypeDrawn = null;
 			this.offsetX = 0;
+			this.pageOffsetX = 0;
 
 			if (this.$element.hasClass(CONTACT_SHEET))
 				this.galleryType = CONTACT_SHEET;
@@ -45,7 +46,9 @@
 			}
 
 			var that = this;
-			this.drawBound = function() { that.draw(); };
+			this.drawBound = function() {
+				that.draw();
+			};
 
 			this.setActive(this.$items.index(this.$items.filter(".active")));
 
@@ -77,13 +80,19 @@
 				this.$item[i].css("transition", "");
 
 			if (this.galleryType == CONTACT_SHEET) {
-				var fast = this.galleryTypeDrawn == SLIDESHOW;
+				var activePage = this.pageSpecs[this.iActive][0];
+				var fast;
+				if (this.galleryTypeDrawn == SLIDESHOW) {
+					this.pageOffsetX = this.offsetX + 100 * activePage;
+					fast = true;
+					setTimeout(this.drawBound, TRANSITION_MSEC);
+				} else
+					fast = false;
+
 				for ( var i = 0; i < this.size; i++)
 					this.positionContact(i, fast);
-				if (fast)
-					setTimeout(this.drawBound, TRANSITION_MSEC);
 
-				this.offsetX = -100 * this.pageSpecs[this.iActive][0];
+				this.offsetX = -100 * activePage + this.pageOffsetX;
 				this.$itemHolder.css("transform", "translateX(" + this.offsetX
 						+ "%) translateZ(0)");
 
@@ -92,6 +101,8 @@
 			} else {
 				for ( var i = 0; i < this.size; i++)
 					this.positionSlide(i);
+
+				this.pageOffsetX = this.offsetX;
 
 				// If transitioning into slideshow, only animate nearby items
 				if (this.galleryTypeDrawn != this.galleryType) {
@@ -128,7 +139,8 @@
 			var rowIndex = Math.floor(contactIndex / CONTACTS_PER_ROW);
 			var colIndex = contactIndex % CONTACTS_PER_ROW;
 
-			var x = (relPage + colIndex / CONTACTS_PER_ROW) * 100 - 37.5;
+			var x = (relPage + colIndex / CONTACTS_PER_ROW) * 100
+					- this.pageOffsetX - 37.5;
 			var y = (rowIndex / CONTACTS_PER_COL) * 100 - 37.5;
 
 			var transform;
