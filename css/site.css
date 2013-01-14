@@ -6,10 +6,10 @@ a {
 }
 
 .nav {
-	font-family: "ltc-bodoni-175", serif;
+	font-family: "brandon-grotesque", sans-serif;
 	text-transform: uppercase;
 	letter-spacing: 1px;
-	padding-top: 30px;
+	padding-top: 40px;
 	margin-bottom: 60px;
 	background: white;
 	position: relative;
@@ -31,8 +31,8 @@ a {
 
 .nav .brand {
 	float: left;
-	margin: 5px 5px 5px 0;
-	padding: 5px 15px 5px 10px;
+	margin: 5px 10px 5px 0;
+	padding: 5px 25px 5px 20px;
 	border-right: 1px black solid;
 }
 
@@ -41,6 +41,7 @@ a {
 	padding: 0;
 	margin: 0;
 	display: table;
+	float: left;
 }
 
 .nav li {
@@ -49,14 +50,15 @@ a {
 }
 
 .nav li a {
-	color: grey;
+	color: black;
 	text-decoration: none;
 	display: block;
-	padding: 10px;
+	padding: 10px 15px 10px 15px;
 }
 
-.nav li.active>a,.nav li>a:hover,.nav li.hover>a,.nav li>a:active {
-	color: black;
+.nav .dropdown-inner li.active>a,.nav li>a:hover,.nav li.hover>a,.nav .dropdown-inner li>a:active
+	{
+	color: grey;
 }
 
 .nav .dropdown-inner {
@@ -67,15 +69,22 @@ a {
 	bottom: 0;
 	font-size: 25px;
 	line-height: 25px;
-	transition: bottom 1s;
-	-moz-transition: bottom 1s;
-	-webkit-transition: bottom 1s;
-	-o-transition: bottom 1s;
+	transition: all 1s;
+	-moz-transition: all 1s;
+	-webkit-transition: all 1s;
+	-o-transition: all 1s;
 }
 
 .nav .dropdown:hover .dropdown-inner,.nav .dropdown.reveal .dropdown-inner
 	{
-	bottom: -45px;
+	transform: translateY(45px);
+	-moz-transform: translateY(45px);
+	-webkit-transform: translateY(45px);
+	-o-transform: translateY(45px);
+}
+
+.nav .dropdown-inner ul {
+	float: none;
 }
 
 .container:after {
@@ -103,15 +112,20 @@ a {
 	overflow: hidden;
 }
 
-.gallery[gallery-type="slideshow"] .gallery-inner {
-	cursor: pointer;
+.gallery .item-holder {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	transition: all 0.5s;
+	-moz-transition: all 0.5s;
+	-webkit-transition: all 0.5s;
+	-o-transition: all 0.5s;
 }
 
 .gallery section {
 	position: absolute;
 	width: 100%;
 	height: 100%;
-	width: 100%;
 }
 
 .gallery .item {
@@ -120,33 +134,20 @@ a {
 	background-position: center;
 	background-repeat: no-repeat;
 	background-size: contain;
-	transition: width 0.5s, height 0.5s, left 0.5s, top 0.5s, margin 0.5s;
-	-moz-transition: width 0.5s, height 0.5s, left 0.5s, top 0.5s, margin
-		0.5s;
-	-webkit-transition: width 0.5s, height 0.5s, left 0.5s, top 0.5s, margin
-		0.5s;
-	-o-transition: width 0.5s, height 0.5s, left 0.5s, top 0.5s, margin 0.5s;
-	background-position: center;
-	background-position: center;
-}
-
-.gallery[gallery-type="slideshow"] .item {
 	width: 100%;
 	height: 100%;
-}
-
-.gallery[gallery-type="contact-sheet"] .item {
-	width: 20%;
-	height: 20%;
-	margin: 2.5%;
 	cursor: pointer;
+	transition: all 0.5s;
+	-moz-transition: all 0.5s;
+	-webkit-transition: all 0.5s;
+	-o-transition: all 0.5s;
 }
 
 .gallery .control {
 	position: absolute;
 	display: block;
 	text-decoration: none;
-	color: grey;
+	color: black;
 	font-size: 60px;
 	font-family: 'open-sans', sans-serif;
 	font-weight: 300;
@@ -170,7 +171,7 @@ a {
 }
 
 .gallery .control:hover {
-	color: black;
+	color: grey;
 }
 
 .gallery .control.prev {
@@ -205,14 +206,14 @@ a {
 	-o-transition: background-color 0.5s;
 }
 
-.gallery[gallery-type="slideshow"] .contact-sheet-icon,.gallery[gallery-type="contact-sheet"] .control.contact-sheet:hover .contact-sheet-icon
-	{
-	background-color: grey;
-}
-
-.gallery[gallery-type="slideshow"]  .control.contact-sheet:hover .contact-sheet-icon,.gallery[gallery-type="contact-sheet"] .contact-sheet-icon
+.gallery.slideshow .contact-sheet-icon,.gallery.contact-sheet .control.contact-sheet:hover .contact-sheet-icon
 	{
 	background-color: black;
+}
+
+.gallery.slideshow .control.contact-sheet:hover .contact-sheet-icon,.gallery.contact-sheet .contact-sheet-icon
+	{
+	background-color: grey;
 }
 
 .contact-sheet-icon:before,.gallery .contact-sheet-icon:after {
@@ -241,7 +242,7 @@ a {
 
 #gallery-main {
 	position: absolute;
-	top: 140px;
+	top: 150px;
 	left: 0;
 	right: 0;
 	bottom: 20px;
