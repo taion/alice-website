@@ -12,7 +12,7 @@
 
 	// iOS devices really do not like animating all the transforms below. Need
 	// to just manipulate left/top/width/height for them
-	var DEVICE_IS_IOS = !!navigator.userAgent.match(/(iPad|iPhone|iPod)/i);
+	var DEVICE_IS_IOS = navigator.userAgent.match(/(iPad|iPhone|iPod)/i);
 
 	var Gallery = function($element) {
 		this.$element = $element;
@@ -85,9 +85,12 @@
 
 			if (this.galleryType == CONTACT_SHEET) {
 				var activePage = this.pageSpecs[this.iActive][0];
+
+				if (this.galleryTypeDrawn != this.galleryType)
+					this.pageOffsetX = this.offsetX + 100 * activePage;
+
 				var fast;
 				if (this.galleryTypeDrawn == SLIDESHOW) {
-					this.pageOffsetX = this.offsetX + 100 * activePage;
 					fast = true;
 					if (!DEVICE_IS_IOS)
 						setTimeout(this.drawBound, TRANSITION_DELAY_MSEC);
@@ -98,28 +101,31 @@
 					this.positionContact(i, fast);
 
 				this.offsetX = -100 * activePage + this.pageOffsetX;
-				this.$itemHolder.css("transform", "translateX(" + this.offsetX
-						+ "%) translateZ(0)");
 
 				this.iNext = this.incrementSheet(1);
 				this.iPrev = this.incrementSheet(-1);
 			} else {
-				for ( var i = 0; i < this.size; i++)
-					this.positionSlide(i);
-
-				this.pageOffsetX = this.offsetX;
-
 				// If transitioning into slideshow, only animate nearby items
 				if (this.galleryTypeDrawn != this.galleryType) {
+					this.pageOffsetX = this.offsetX + 125 * this.iActive;
+
 					for ( var i = 0; i < this.size; i++) {
 						if (i < this.iActive - 2 || i > this.iActive + 2)
 							this.$item[i].css("transition", "none");
 					}
 				}
 
+				for ( var i = 0; i < this.size; i++)
+					this.positionSlide(i);
+
+				this.offsetX = -125 * this.iActive + this.pageOffsetX;
+
 				this.iNext = this.incrementSlide(1);
 				this.iPrev = this.incrementSlide(-1);
 			}
+			this.$itemHolder.css("transform", "translateX(" + this.offsetX
+					+ "%) translateZ(0)");
+
 			this.galleryTypeDrawn = this.galleryType;
 
 			this.nextSection = $(this.$items[this.iNext]).parent()[0];
@@ -145,19 +151,21 @@
 			var colIndex = contactIndex % CONTACTS_PER_ROW;
 
 			var x = (relPage + colIndex / CONTACTS_PER_ROW) * 100
-					- this.pageOffsetX - 37.5;
-			var y = (rowIndex / CONTACTS_PER_COL) * 100 - 37.5;
+					- this.pageOffsetX + 2.5;
+			var y = (rowIndex / CONTACTS_PER_COL) * 100 + 2.5;
 
 			if (DEVICE_IS_IOS) {
-				$item.css("left", x + 40 + "%");
-				$item.css("top", y + 40 + "%");
+				$item.css("left", x + "%");
+				$item.css("top", y + "%");
 				$item.css("width", "20%");
 				$item.css("height", "20%");
 			} else {
+				x -= 40;
+				y -= 40;
 				var transform;
 				if (fast)
-					transform = "translate3d(" + x + "%, " + y
-							+ "%, 0) scale3d(0.2, 0.2, 1)";
+					transform = "translate(" + x + "%, " + y
+							+ "%) scale3d(0.2, 0.2, 1)";
 				else
 					transform = "translate(" + x + "%, " + y + "%) scale(0.2)";
 				$item.css("transform", transform);
@@ -166,7 +174,7 @@
 
 		positionSlide : function(i) {
 			var $item = this.$item[i];
-			var x = 125 * (i - this.iActive) - this.offsetX;
+			var x = 125 * i - this.pageOffsetX;
 
 			if (DEVICE_IS_IOS) {
 				$item.css("left", x + "%");
