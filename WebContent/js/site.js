@@ -8,7 +8,11 @@
 	var GALLERY_TYPES = [ SLIDESHOW, CONTACT_SHEET ];
 	var NUM_GALLERY_TYPES = GALLERY_TYPES.length;
 
-	var TRANSITION_MSEC = 500;
+	var TRANSITION_DELAY_MSEC = 750;
+
+	// iOS devices really do not like animating all the transforms below. Need
+	// to just manipulate left/top/width/height for them
+	var DEVICE_IS_IOS = !!navigator.userAgent.match(/(iPad|iPhone|iPod)/i);
 
 	var Gallery = function($element) {
 		this.$element = $element;
@@ -85,7 +89,8 @@
 				if (this.galleryTypeDrawn == SLIDESHOW) {
 					this.pageOffsetX = this.offsetX + 100 * activePage;
 					fast = true;
-					setTimeout(this.drawBound, TRANSITION_MSEC);
+					if (!DEVICE_IS_IOS)
+						setTimeout(this.drawBound, TRANSITION_DELAY_MSEC);
 				} else
 					fast = false;
 
@@ -143,19 +148,34 @@
 					- this.pageOffsetX - 37.5;
 			var y = (rowIndex / CONTACTS_PER_COL) * 100 - 37.5;
 
-			var transform;
-			if (fast)
-				transform = "translate3d(" + x + "%, " + y
-						+ "%, 0) scale3d(0.2, 0.2, 1)";
-			else
-				transform = "translate(" + x + "%, " + y + "%) scale(0.2)";
-			$item.css("transform", transform);
+			if (DEVICE_IS_IOS) {
+				$item.css("left", x + 40 + "%");
+				$item.css("top", y + 40 + "%");
+				$item.css("width", "20%");
+				$item.css("height", "20%");
+			} else {
+				var transform;
+				if (fast)
+					transform = "translate3d(" + x + "%, " + y
+							+ "%, 0) scale3d(0.2, 0.2, 1)";
+				else
+					transform = "translate(" + x + "%, " + y + "%) scale(0.2)";
+				$item.css("transform", transform);
+			}
 		},
 
 		positionSlide : function(i) {
 			var $item = this.$item[i];
 			var x = 125 * (i - this.iActive) - this.offsetX;
-			$item.css("transform", "translate3d(" + x + "%, 0, 0)");
+
+			if (DEVICE_IS_IOS) {
+				$item.css("left", x + "%");
+				$item.css("top", "");
+				$item.css("width", "");
+				$item.css("height", "");
+			} else {
+				$item.css("transform", "translate3d(" + x + "%, 0, 0)");
+			}
 		},
 
 		incrementSheet : function(increment) {

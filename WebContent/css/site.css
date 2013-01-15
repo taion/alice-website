@@ -1,3 +1,7 @@
+html {
+	font-family: "brandon-grotesque", sans-serif;
+}
+
 a {
 	transition: color 0.5s;
 	-moz-transition: color 0.5s;
@@ -5,8 +9,19 @@ a {
 	-o-transition: color 0.5s;
 }
 
+.container {
+	display: table;
+	margin: auto;
+}
+
+.container:after {
+	content: "";
+	clear: both;
+	display: block;
+}
+
 .nav {
-	font-family: "brandon-grotesque", sans-serif;
+	display: block;
 	text-transform: uppercase;
 	letter-spacing: 1px;
 	padding-top: 40px;
@@ -87,12 +102,6 @@ a {
 	float: none;
 }
 
-.container:after {
-	content: "";
-	clear: both;
-	display: block;
-}
-
 .gallery {
 	position: relative;
 }
@@ -120,6 +129,9 @@ a {
 	-moz-transition: all 0.5s;
 	-webkit-transition: all 0.5s;
 	-o-transition: all 0.5s;
+	-webkit-backface-visibility: hidden;
+	-webkit-perspective: 1000;
+	-webkit-transform-style: flat;
 }
 
 .gallery section {
@@ -141,6 +153,8 @@ a {
 	-moz-transition: all 0.5s;
 	-webkit-transition: all 0.5s;
 	-o-transition: all 0.5s;
+	-webkit-perspective: 1000;
+	-webkit-transform-style: flat;
 }
 
 .gallery .control {
@@ -149,8 +163,6 @@ a {
 	text-decoration: none;
 	color: black;
 	font-size: 60px;
-	font-family: 'open-sans', sans-serif;
-	font-weight: 300;
 	cursor: pointer;
 	text-align: center;
 	-webkit-touch-callout: none;
@@ -167,7 +179,6 @@ a {
 	height: 100px;
 	margin-top: -70px;
 	padding: 20px;
-	font-family: 'open-sans', sans-serif;
 }
 
 .gallery .control:hover {
