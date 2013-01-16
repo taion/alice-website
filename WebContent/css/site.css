@@ -115,14 +115,14 @@ a {
 }
 
 .gallery-inner {
+	position: absolute;
 	width: 100%;
 	height: 100%;
-	position: relative;
 	overflow: hidden;
 }
 
 .gallery .item-holder {
-	position: relative;
+	position: absolute;
 	width: 100%;
 	height: 100%;
 	transition: all 0.5s;
@@ -149,12 +149,19 @@ a {
 	width: 100%;
 	height: 100%;
 	cursor: pointer;
+	-webkit-perspective: 1000;
+	-webkit-transform-style: flat;
+}
+
+.gallery .item.animate,.gallery .item.animate-ios {
 	transition: all 0.5s;
 	-moz-transition: all 0.5s;
 	-webkit-transition: all 0.5s;
 	-o-transition: all 0.5s;
-	-webkit-perspective: 1000;
-	-webkit-transform-style: flat;
+}
+
+.gallery .item.animate-ios {
+	-webkit-backface-visibility: hidden;
 }
 
 .gallery .control {

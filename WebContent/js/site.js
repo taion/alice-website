@@ -8,11 +8,10 @@
 	var GALLERY_TYPES = [ SLIDESHOW, CONTACT_SHEET ];
 	var NUM_GALLERY_TYPES = GALLERY_TYPES.length;
 
-	var TRANSITION_DELAY_MSEC = 750;
-
 	// iOS devices really do not like animating all the transforms below. Need
 	// to just manipulate left/top/width/height for them
 	var DEVICE_IS_IOS = navigator.userAgent.match(/(iPad|iPhone|iPod)/i);
+	var ANIMATE_CLASS = DEVICE_IS_IOS ? "animate-ios" : "animate";
 
 	var Gallery = function($element) {
 		this.$element = $element;
@@ -37,11 +36,11 @@
 				this.$item.push($(this.$items[i]));
 
 			this.pageSpecs = [];
-			var $sections = this.$element.find("section");
+			this.$sections = this.$element.find("section");
 			var page = 0;
-			for ( var i = 0; i < $sections.length; i++) {
+			for ( var i = 0; i < this.$sections.length; i++) {
 				var j = 0;
-				var sectionLength = $($sections[i]).children().length;
+				var sectionLength = $(this.$sections[i]).children().length;
 				while (j < sectionLength) {
 					for ( var k = 0; k < CONTACTS_PER_PAGE && j < sectionLength; j++, k++)
 						this.pageSpecs.push([ page, k ]);
@@ -79,44 +78,34 @@
 			this.$items.removeClass("active");
 			this.$active.addClass("active");
 
-			// Reset hack below
-			for ( var i = 0; i < this.size; i++)
-				this.$item[i].css("transition", "");
-
 			if (this.galleryType == CONTACT_SHEET) {
 				var activePage = this.pageSpecs[this.iActive][0];
 
 				if (this.galleryTypeDrawn != this.galleryType)
 					this.pageOffsetX = this.offsetX + 100 * activePage;
 
-				var fast;
-				if (this.galleryTypeDrawn == SLIDESHOW) {
-					fast = true;
-					if (!DEVICE_IS_IOS)
-						setTimeout(this.drawBound, TRANSITION_DELAY_MSEC);
-				} else
-					fast = false;
-
-				for ( var i = 0; i < this.size; i++)
-					this.positionContact(i, fast);
+				var animate = this.galleryTypeDrawn == SLIDESHOW;
+				for ( var i = 0; i < this.size; i++) {
+					var animateItem = animate
+							&& this.pageSpecs[i][0] == activePage;
+					this.positionContact(i, animateItem);
+				}
 
 				this.offsetX = -100 * activePage + this.pageOffsetX;
 
 				this.iNext = this.incrementSheet(1);
 				this.iPrev = this.incrementSheet(-1);
 			} else {
-				// If transitioning into slideshow, only animate nearby items
-				if (this.galleryTypeDrawn != this.galleryType) {
+				if (this.galleryTypeDrawn != this.galleryType)
 					this.pageOffsetX = this.offsetX + 125 * this.iActive;
 
-					for ( var i = 0; i < this.size; i++) {
-						if (i < this.iActive - 2 || i > this.iActive + 2)
-							this.$item[i].css("transition", "none");
-					}
+				// If transitioning into slideshow, only animate nearby items
+				var animate = this.galleryTypeDrawn == CONTACT_SHEET;
+				for ( var i = 0; i < this.size; i++) {
+					var animateItem = animate && i >= this.iActive - 2
+							&& i <= this.iActive + 2;
+					this.positionSlide(i, animateItem);
 				}
-
-				for ( var i = 0; i < this.size; i++)
-					this.positionSlide(i);
 
 				this.offsetX = -125 * this.iActive + this.pageOffsetX;
 
@@ -140,7 +129,7 @@
 			this.$element.trigger("galleryupdate", this);
 		},
 
-		positionContact : function(i, fast) {
+		positionContact : function(i, animate) {
 			var $item = this.$item[i];
 			var pageSpec = this.pageSpecs[i];
 			var pageIndex = pageSpec[0];
@@ -151,39 +140,36 @@
 			var colIndex = contactIndex % CONTACTS_PER_ROW;
 
 			var x = (relPage + colIndex / CONTACTS_PER_ROW) * 100
-					- this.pageOffsetX + 2.5;
-			var y = (rowIndex / CONTACTS_PER_COL) * 100 + 2.5;
+					- this.pageOffsetX - 37.5;
+			var y = (rowIndex / CONTACTS_PER_COL) * 100 - 37.5;
 
-			if (DEVICE_IS_IOS) {
-				$item.css("left", x + "%");
-				$item.css("top", y + "%");
-				$item.css("width", "20%");
-				$item.css("height", "20%");
-			} else {
-				x -= 40;
-				y -= 40;
-				var transform;
-				if (fast)
-					transform = "translate(" + x + "%, " + y
-							+ "%) scale3d(0.2, 0.2, 1)";
-				else
-					transform = "translate(" + x + "%, " + y + "%) scale(0.2)";
-				$item.css("transform", transform);
-			}
+			if (DEVICE_IS_IOS)
+				$item.css({
+					left : x + 40 + "%",
+					top : y + 40 + "%",
+					width : "20%",
+					height : "20%"
+				});
+			else
+				$item.css("transform", "translate(" + x + "%, " + y
+						+ "%) scale(0.2)");
+			$item.toggleClass(ANIMATE_CLASS, animate);
 		},
 
-		positionSlide : function(i) {
+		positionSlide : function(i, animate) {
 			var $item = this.$item[i];
 			var x = 125 * i - this.pageOffsetX;
 
-			if (DEVICE_IS_IOS) {
-				$item.css("left", x + "%");
-				$item.css("top", "");
-				$item.css("width", "");
-				$item.css("height", "");
-			} else {
+			if (DEVICE_IS_IOS)
+				$item.css({
+					left : x + "%",
+					top : "",
+					width : "",
+					height : ""
+				});
+			else
 				$item.css("transform", "translate3d(" + x + "%, 0, 0)");
-			}
+			$item.toggleClass(ANIMATE_CLASS, animate);
 		},
 
 		incrementSheet : function(increment) {
@@ -295,10 +281,14 @@
 		var hashItemIndex = Number(hashItemTag);
 
 		if (isNaN(hashItemIndex)) {
+			var titleFilter = '[title="' + hashItemTag + '"]';
 			var $items = gallery.$items;
-			var $hashItemsByTitle = $items.filter('[title="' + hashItemTag
-					+ '"]');
-			if ($hashItemsByTitle) {
+
+			var $candidate;
+			if ($candidate = gallery.$sections.filter(titleFilter)) {
+				var sectionItem = $candidate.children()[0];
+				hashItemIndex = $items.index(sectionItem);
+			} else if ($candidate = $items.filter(titleFilter)) {
 				hashItemIndex = $items.index($hashItemsByTitle[0]);
 			} else
 				hashItemIndex = 0;
@@ -327,9 +317,9 @@
 		});
 		var galleryMain = $galleryMain.data("gallery");
 
-		var $sections = $("#portfolios");
-		var $sectionHeaders = $sections.children();
-		var $sectionsHeader = $sections.parent().parent();
+		var $sectionHeadersGroup = $("#portfolios");
+		var $sectionHeaders = $sectionHeadersGroup.children();
+		var $sectionHeadersHolder = $sectionHeadersGroup.parent().parent();
 		var activeSection = undefined;
 		var previewSectionIncrement = 0;
 		var sectionRecentlyChanged = 0;
@@ -349,9 +339,9 @@
 				previewSection = activeSection;
 
 			if (previewSection != activeSection || sectionRecentlyChanged)
-				$sectionsHeader.addClass("reveal");
+				$sectionHeadersHolder.addClass("reveal");
 			else
-				$sectionsHeader.removeClass("reveal");
+				$sectionHeadersHolder.removeClass("reveal");
 
 			$sectionHeaders.removeClass("hover");
 			if (previewSection != activeSection)
@@ -403,15 +393,6 @@
 		};
 
 		galleryMain.init();
-
-		$("#portfolios a").click(function(event) {
-			event.preventDefault();
-
-			var $section = $("section" + this.hash);
-			var sectionItem = $section.children()[0];
-			var sectionItemIndex = galleryMain.$items.index(sectionItem);
-			galleryMain.setActive(sectionItemIndex);
-		});
 
 		galleryMain.$nextControl.mouseenter(function() {
 			previewSectionIncrement = 1;
