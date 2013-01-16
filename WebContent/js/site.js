@@ -366,8 +366,14 @@
 				hash = "#" + itemTag;
 
 			if (window.location.hash != hash) {
-				ignoreHashChange++;
-				window.location.hash = hash;
+				// Don't override the hash if landing on start of page
+				var onMainPage = window.location.hash == ""
+						&& gallery.iActive == 0
+						&& gallery.galleryType == SLIDESHOW;
+				if (!onMainPage) {
+					ignoreHashChange++;
+					window.location.hash = hash;
+				}
 			}
 
 			var gallerySection = gallery.section;
