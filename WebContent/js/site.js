@@ -320,6 +320,7 @@
 
 		var $sectionHeadersGroup = $("#portfolios");
 		var $sectionHeaders = $sectionHeadersGroup.children();
+		var $sectionLinks = $sectionHeaders.children("a");
 		var $sectionHeadersHolder = $sectionHeadersGroup.parent().parent();
 		var activeSection = null;
 		var previewSectionIncrement = 0;
@@ -329,7 +330,7 @@
 		var $sectionLink = [];
 		for ( var i = 0; i < $sectionHeaders.length; i++) {
 			var $thisSectionHeader = $($sectionHeaders[i]);
-			var $thisSectionLink = $($thisSectionHeader.find("a")[0]);
+			var $thisSectionLink = $($sectionLinks[i]);
 
 			var sectionTitle = $thisSectionLink.attr("href").substring(1);
 			$sectionHeader[sectionTitle] = $thisSectionHeader;
@@ -411,6 +412,11 @@
 		};
 
 		galleryMain.init();
+
+		$sectionLinks.click(function(event) {
+			event.preventDefault();
+			window.location.hash = this.hash;
+		});
 
 		galleryMain.$nextControl.mouseenter(function() {
 			previewSectionIncrement = 1;
