@@ -37,8 +37,9 @@
 
 			this.pageSpecs = [];
 			this.$sections = this.$element.find("section");
+			this.numSections = this.$sections.length;
 			var page = 0;
-			for ( var i = 0; i < this.$sections.length; i++) {
+			for ( var i = 0; i < this.numSections; i++) {
 				var j = 0;
 				var sectionLength = $(this.$sections[i]).children().length;
 				while (j < sectionLength) {
@@ -247,6 +248,18 @@
 		return [ galleryType, hashItemTag ];
 	}
 
+	function itemFromHash(hashItemTag, $sections, $items) {
+		var titleFilter = '[title="' + hashItemTag + '"]';
+
+		var $candidate;
+		if (($candidate = $sections.filter(titleFilter)).length)
+			return $candidate.children()[0];
+		else if (($candidate = $items.filter(titleFilter)).length)
+			return $candidate[0];
+		else
+			return null;
+	}
+
 	function initializeFromHash($gallery) {
 		var parsedHash = parseHash();
 		for ( var i = 0; i < NUM_GALLERY_TYPES; i++) {
@@ -257,19 +270,15 @@
 		var hashItemTag = parsedHash[1];
 
 		var hashItemIndex = Number(hashItemTag);
-		var $galleryItems = $gallery.find(".item");
+		var $items = $gallery.find(".item");
 
 		var hashItem;
-		if (!isNaN(hashItemIndex)) {
-			hashItem = $galleryItems[hashItemIndex];
-		} else {
-			var $hashItemsByTitle = $galleryItems.filter('[title="'
-					+ hashItemTag + '"]');
-			if ($hashItemsByTitle.length)
-				hashItem = $hashItemsByTitle[0];
-			else
-				hashItem = $galleryItems[0];
-		}
+		if (isNaN(hashItemIndex)) {
+			var candidate = itemFromHash(hashItemTag, $gallery.find("section"),
+					$items);
+			hashItem = candidate ? candidate : $items[0];
+		} else
+			hashItem = $items[hashItemIndex];
 		$(hashItem).addClass("active");
 	}
 
@@ -281,17 +290,9 @@
 		var hashItemIndex = Number(hashItemTag);
 
 		if (isNaN(hashItemIndex)) {
-			var titleFilter = '[title="' + hashItemTag + '"]';
 			var $items = gallery.$items;
-
-			var $candidate;
-			if ($candidate = gallery.$sections.filter(titleFilter)) {
-				var sectionItem = $candidate.children()[0];
-				hashItemIndex = $items.index(sectionItem);
-			} else if ($candidate = $items.filter(titleFilter)) {
-				hashItemIndex = $items.index($hashItemsByTitle[0]);
-			} else
-				hashItemIndex = 0;
+			var candidate = itemFromHash(hashItemTag, gallery.$sections, $items);
+			hashItemIndex = candidate ? $items.index(candidate) : 0;
 		}
 
 		if (hashItemIndex != gallery.iActive) {
@@ -320,13 +321,19 @@
 		var $sectionHeadersGroup = $("#portfolios");
 		var $sectionHeaders = $sectionHeadersGroup.children();
 		var $sectionHeadersHolder = $sectionHeadersGroup.parent().parent();
-		var activeSection = undefined;
+		var activeSection = null;
 		var previewSectionIncrement = 0;
 		var sectionRecentlyChanged = 0;
 
-		function $sectionHeader(section) {
-			return $sectionHeaders.find('a[href$="#' + section.id + '"]')
-					.parent();
+		var $sectionHeader = {};
+		var $sectionLink = [];
+		for ( var i = 0; i < $sectionHeaders.length; i++) {
+			var $thisSectionHeader = $($sectionHeaders[i]);
+			var $thisSectionLink = $($thisSectionHeader.find("a")[0]);
+
+			var sectionTitle = $thisSectionLink.attr("href").substring(1);
+			$sectionHeader[sectionTitle] = $thisSectionHeader;
+			$sectionLink.push($thisSectionLink);
 		}
 
 		function drawSectionsTransient() {
@@ -345,7 +352,7 @@
 
 			$sectionHeaders.removeClass("hover");
 			if (previewSection != activeSection)
-				$sectionHeader(previewSection).addClass("hover");
+				$sectionHeader[previewSection.title].addClass("hover");
 		}
 
 		function maybeUnrevealSectionsOnChange() {
@@ -360,20 +367,25 @@
 				itemTag = gallery.iActive;
 
 			var hash;
-			if (gallery.galleryType == CONTACT_SHEET)
+			if (gallery.galleryType == CONTACT_SHEET) {
 				hash = "#contact:" + itemTag;
-			else
+				for ( var i = 0; i < $sectionHeaders.length; i++) {
+					var $thisSectionLink = $sectionLink[i];
+					$thisSectionLink.attr("href", $thisSectionLink.attr("href")
+							.replace(/#(?!contact:)/, "#contact:"));
+				}
+			} else {
 				hash = "#" + itemTag;
+				for ( var i = 0; i < galleryMain.numSections; i++) {
+					var $thisSectionLink = $sectionLink[i];
+					$thisSectionLink.attr("href", $thisSectionLink.attr("href")
+							.replace("#contact:", "#"));
+				}
+			}
 
 			if (window.location.hash != hash) {
-				// Don't override the hash if landing on start of page
-				var onMainPage = window.location.hash == ""
-						&& gallery.iActive == 0
-						&& gallery.galleryType == SLIDESHOW;
-				if (!onMainPage) {
-					ignoreHashChange++;
-					window.location.hash = hash;
-				}
+				ignoreHashChange++;
+				window.location.hash = hash;
 			}
 
 			var gallerySection = gallery.section;
@@ -384,7 +396,7 @@
 				}
 
 				$sectionHeaders.removeClass("active");
-				$sectionHeader(gallerySection).addClass("active");
+				$sectionHeader[gallerySection.title].addClass("active");
 				activeSection = gallerySection;
 			}
 
@@ -409,7 +421,7 @@
 			drawSectionsTransient();
 		});
 
-		function clearPreviewSection(nextSection) {
+		function clearPreviewSection() {
 			previewSectionIncrement = 0;
 			drawSectionsTransient();
 		}
