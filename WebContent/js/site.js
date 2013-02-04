@@ -57,6 +57,7 @@
 			this.setActive(this.$items.index(this.$items.filter(".active")));
 
 			this.$element.find(".item").click(this.itemClick());
+			$(document).keydown(this.arrowKey());
 
 			this.$nextControl = this.$element.find(".control.next");
 			this.$prevControl = this.$element.find(".control.prev");
@@ -198,6 +199,28 @@
 					that.setActive(that.$items.index(this));
 				} else {
 					that.setActive(that.iNext);
+				}
+			};
+		},
+
+		arrowKey : function() {
+			var that = this;
+			return function(event) {
+				switch (event.which) {
+				case 37: // Left arrow
+					that.setActive(that.iPrev);
+					return false;
+				case 39: // Right arrow
+					that.setActive(that.iNext);
+					return false;
+				case 38: // Up arrow
+					that.galleryType = SLIDESHOW;
+					that.draw();
+					return false;
+				case 40: // Down arrow
+					that.galleryType = CONTACT_SHEET;
+					that.draw();
+					return false;
 				}
 			};
 		},
