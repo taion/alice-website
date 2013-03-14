@@ -341,10 +341,11 @@
 		});
 		var galleryMain = $galleryMain.data("gallery");
 
-		var $sectionHeadersGroup = $("#portfolios");
+		var $sectionHeadersGroup = $(".gallery-section-headers");
+		var sectionHeadersActive = $sectionHeadersGroup.length > 0;
+		var $sectionHeadersHolder = $sectionHeadersGroup.parent().parent();
 		var $sectionHeaders = $sectionHeadersGroup.children();
 		var $sectionLinks = $sectionHeaders.children("a");
-		var $sectionHeadersHolder = $sectionHeadersGroup.parent().parent();
 		var activeSection = null;
 		var previewSectionIncrement = 0;
 		var sectionRecentlyChanged = 0;
@@ -393,17 +394,21 @@
 			var hash;
 			if (gallery.galleryType == CONTACT_SHEET) {
 				hash = "#contact:" + itemTag;
-				for ( var i = 0; i < $sectionHeaders.length; i++) {
-					var $thisSectionLink = $sectionLink[i];
-					$thisSectionLink.attr("href", $thisSectionLink.attr("href")
-							.replace(/#(?!contact:)/, "#contact:"));
+				if (sectionHeadersActive) {
+					for ( var i = 0; i < $sectionHeaders.length; i++) {
+						var $thisSectionLink = $sectionLink[i];
+						$thisSectionLink.attr("href", $thisSectionLink.attr(
+								"href").replace(/#(?!contact:)/, "#contact:"));
+					}
 				}
 			} else {
 				hash = "#" + itemTag;
-				for ( var i = 0; i < galleryMain.numSections; i++) {
-					var $thisSectionLink = $sectionLink[i];
-					$thisSectionLink.attr("href", $thisSectionLink.attr("href")
-							.replace("#contact:", "#"));
+				if (sectionHeadersActive) {
+					for ( var i = 0; i < galleryMain.numSections; i++) {
+						var $thisSectionLink = $sectionLink[i];
+						$thisSectionLink.attr("href", $thisSectionLink.attr(
+								"href").replace("#contact:", "#"));
+					}
 				}
 			}
 
@@ -412,19 +417,21 @@
 				window.location.hash = hash;
 			}
 
-			var gallerySection = gallery.section;
-			if (activeSection != gallerySection) {
-				if (activeSection) {
-					sectionRecentlyChanged++;
-					setTimeout(maybeUnrevealSectionsOnChange, 2000);
+			if (sectionHeadersActive) {
+				var gallerySection = gallery.section;
+				if (activeSection != gallerySection) {
+					if (activeSection) {
+						sectionRecentlyChanged++;
+						setTimeout(maybeUnrevealSectionsOnChange, 2000);
+					}
+
+					$sectionHeaders.removeClass("active");
+					$sectionHeader[gallerySection.title].addClass("active");
+					activeSection = gallerySection;
 				}
 
-				$sectionHeaders.removeClass("active");
-				$sectionHeader[gallerySection.title].addClass("active");
-				activeSection = gallerySection;
+				drawSectionsTransient();
 			}
-
-			drawSectionsTransient();
 		});
 
 		window.onhashchange = function() {
@@ -436,31 +443,33 @@
 
 		galleryMain.init();
 
-		$sectionLinks.click(function(event) {
-			event.preventDefault();
-			window.location.hash = this.hash;
-		});
-
-		galleryMain.$nextControl.mouseenter(function() {
-			previewSectionIncrement = 1;
-			drawSectionsTransient();
-		});
-		galleryMain.$prevControl.mouseenter(function() {
-			previewSectionIncrement = -1;
-			drawSectionsTransient();
-		});
-
-		function clearPreviewSection() {
-			previewSectionIncrement = 0;
-			drawSectionsTransient();
-		}
-		galleryMain.$nextControl.mouseleave(clearPreviewSection);
-		galleryMain.$prevControl.mouseleave(clearPreviewSection);
-
-		$(".nav a").click(function(event) {
-			if ($(this).parent().hasClass("active"))
+		if (sectionHeadersActive) {
+			$sectionLinks.click(function(event) {
 				event.preventDefault();
-		});
+				window.location.hash = this.hash;
+			});
+
+			galleryMain.$nextControl.mouseenter(function() {
+				previewSectionIncrement = 1;
+				drawSectionsTransient();
+			});
+			galleryMain.$prevControl.mouseenter(function() {
+				previewSectionIncrement = -1;
+				drawSectionsTransient();
+			});
+
+			function clearPreviewSection() {
+				previewSectionIncrement = 0;
+				drawSectionsTransient();
+			}
+			galleryMain.$nextControl.mouseleave(clearPreviewSection);
+			galleryMain.$prevControl.mouseleave(clearPreviewSection);
+
+			$(".nav a").click(function(event) {
+				if ($(this).parent().hasClass("active"))
+					event.preventDefault();
+			});
+		}
 
 		$galleryMain.find(".gallery-inner").css("display", "block");
 	});
