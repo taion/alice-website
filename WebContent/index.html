@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Portfolio | Alice Gao Photography</title>
+
+<link
+	href="//cdnjs.cloudflare.com/ajax/libs/normalize/2.1.0/normalize.css"
+	rel="stylesheet" />
+<link href="css/site.css" rel="stylesheet" type="text/css" />
+
+</head>
+<body>
+	<a href="#"
+		onclick='$("#main-portfolio").data("portfolio").drawBaseGallery()'>base</a>
+	<a href="#"
+		onclick='$("#main-portfolio").data("portfolio").drawSectionGallery(0)'>0</a>
+	<a href="#"
+		onclick='$("#main-portfolio").data("portfolio").drawSectionGallery(1)'>1</a>
+	<section id="main-portfolio" class="portfolio" data-base-rows=4
+		data-cols=6 data-cycle-delay=2000></section>
+
+	<script
+		src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+	<script src="js/portfolio.js"></script>
+
+	<script type="text/javascript">
+		Portfolio.start("#main-portfolio", "data/portfolio.json");
+	</script>
+</body>
+</html>

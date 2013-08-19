@@ -1,0 +1,70 @@
+#main-portfolio {
+	width: 900px;
+	height: 900px;
+}
+
+.portfolio {
+	position: relative;
+}
+
+.thumbnail {
+	position: absolute;
+	width: 16.6%;
+	height: 16.6%;
+	display: none;
+	perspective: 900;
+	-moz-perspective: 900;
+	-ms-perspective: 900;
+	-o-perspective: 900;
+	-webkit-perspective: 900;
+	transition: all 1s;
+	-moz-transition: all 1s;
+	-ms-transition: all 1s;
+	-o-transition: all 1s;
+	-webkit-transition: all 1s;
+}
+
+.thumbnail.visible {
+	display: block;
+}
+
+.thumbnail-inner {
+	position: relative;
+	left: 4%;
+	top: 4%;
+	width: 92%;
+	height: 92%;
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+	top: 5%;
+	backface-visibility: hidden;
+	-moz-backface-visibility: hidden;
+	-ms-backface-visibility: hidden;
+	-o-backface-visibility: hidden;
+	-webkit-backface-visibility: hidden;
+	transition: all 1s;
+	-moz-transition: all 1s;
+	-ms-transition: all 1s;
+	-o-transition: all 1s;
+	-webkit-transition: all 1s;
+}
+
+.thumbnail-inner.pre-transition {
+	transform: rotateY(-180deg);
+	-moz-transform: rotateY(-180deg);
+	-ms-transform: rotateY(-180deg);
+	-o-transform: rotateY(-180deg);
+	-webkit-transform: rotateY(-180deg);
+	-o-transform: rotateY(-180deg);
+	-moz-transform: rotateY(-180deg);
+}
+
+.thumbnail-inner.post-transition {
+	transform: rotateY(180deg);
+	-moz-transform: rotateY(180deg);
+	-ms-transform: rotateY(180deg);
+	-o-transform: rotateY(180deg);
+	-webkit-transform: rotateY(180deg);
+	-o-transform: rotateY(180deg);
+}
