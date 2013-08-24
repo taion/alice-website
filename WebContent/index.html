@@ -7,25 +7,25 @@
 <link
 	href="//cdnjs.cloudflare.com/ajax/libs/normalize/2.1.0/normalize.css"
 	rel="stylesheet" />
+<link href="css/jjp.css" rel="stylesheet" type="text/css" />
 <link href="css/site.css" rel="stylesheet" type="text/css" />
 
 </head>
 <body>
-	<a href="#"
-		onclick='$("#main-portfolio").data("portfolio").drawBaseGallery()'>base</a>
-	<a href="#"
-		onclick='$("#main-portfolio").data("portfolio").drawSectionGallery(0)'>0</a>
-	<a href="#"
-		onclick='$("#main-portfolio").data("portfolio").drawSectionGallery(1)'>1</a>
-	<section id="main-portfolio" class="portfolio" data-base-rows=4
-		data-cols=6 data-cycle-delay=2000></section>
+	<a href="#" class="jjp-base-link" data-target="#main-portfolio">base</a>
+	|
+	<a href="#one" class="jjp-section-link" data-target="#main-portfolio">one</a>
+	<a href="#two" class="jjp-section-link" data-target="#main-portfolio">two</a>
+	<a href="#three" class="jjp-section-link" data-target="#main-portfolio">three</a>
+	<a href="#four" class="jjp-section-link" data-target="#main-portfolio">four</a>
+	<a href="#five" class="jjp-section-link" data-target="#main-portfolio">five</a>
+
+	<section id="main-portfolio" class="jjp-portfolio"
+		data-contents-url="data/portfolio.json" data-base-rows=4 data-cols=6
+		data-transition-millis=1000 data-cycle-millis=2000></section>
 
 	<script
 		src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
-	<script src="js/portfolio.js"></script>
-
-	<script type="text/javascript">
-		Portfolio.start("#main-portfolio", "data/portfolio.json");
-	</script>
+	<script src="js/jjp.js"></script>
 </body>
 </html>
