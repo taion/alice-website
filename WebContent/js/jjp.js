@@ -49,6 +49,11 @@ var Portfolio = function() {
 			this.animateDraw = this.animateDraw.bind(this);
 			this.startAnimateDraw = this.startAnimateDraw.bind(this);
 			this.midAnimateDraw = this.midAnimateDraw.bind(this);
+			this.afterAnimateDraw = this.afterAnimateDraw.bind(this);
+
+			this.animateCycle = this.animateCycle.bind(this);
+			this.startAnimateCycle = this.startAnimateCycle.bind(this);
+			this.midAnimateCycle = this.midAnimateCycle.bind(this);
 
 			this.cycleBaseGallery = this.cycleBaseGallery.bind(this);
 
@@ -69,7 +74,8 @@ var Portfolio = function() {
 			this.cols = this.$element.data("cols");
 
 			this.transitionMillis = this.$element.data("transition-millis");
-			this.transitionStyle = "all " + this.transitionMillis / 1000 + "s";
+			this.transitionStyle = "all " + this.transitionMillis / 1000
+					+ "s ease-out";
 
 			this.cycleMillis = this.$element.data("cycle-millis");
 			/*
@@ -93,21 +99,21 @@ var Portfolio = function() {
 
 			for ( var i = 0; i < this.data.length; i++) {
 				var sectionData = this.data[i];
+				var sectionName = sectionData.title;
 				var sectionItems = sectionData.items;
 
-				this.sections[sectionData.title] = [ this.$thumbs.length,
-						undefined ];
+				this.sections[sectionName] = [ this.$thumbs.length, undefined ];
 
 				for ( var j = 0; j < sectionItems.length; j++) {
 					var imageData = sectionItems[j];
 					var $thumb = this.makeThumb(imageData.title, imageData.url,
-							width, height, this.transitionStyle);
+							width, height, sectionName);
 
 					this.$thumbs.push($thumb);
 					this.$element.append($thumb);
 				}
 
-				this.sections[sectionData.title][1] = this.$thumbs.length;
+				this.sections[sectionName][1] = this.$thumbs.length;
 			}
 
 			this.imagesCount = this.$thumbs.length;
@@ -120,30 +126,35 @@ var Portfolio = function() {
 				throw "too few images for gallery";
 		},
 
-		makeThumb : function(title, url, width, height, transition) {
+		makeThumb : function(title, url, width, height, sectionName) {
 			var $inner = $("<div />").attr("title", title).addClass(
 					"jjp-thumbnail-inner").css("background-image",
-					"url(" + url + ")").data("target", url);
+					"url(" + url + ")").data("target", url).data("section",
+					sectionName);
 			var $thumb = $("<figure />").addClass("jjp-thumbnail").append(
 					$inner).data("$inner", $inner);
 
-			$inner.css("transition", transition);
+			$inner.css("transition", this.transitionStyle);
 			$thumb.css({
 				"width" : width,
 				"height" : height,
-				"transition" : transition,
+				"transition" : this.transitionStyle,
 			});
 
 			return $thumb;
 		},
 
 		initLightbox : function() {
+			var $lightboxSpacer = $("<div />").addClass("jjp-lightbox-spacer");
 			this.$lightboxImage = $("<img />").addClass("jjp-lightbox-image")
 					.css("transition", this.transitionStyle);
+
 			this.$lightbox = $("<figure />").addClass("jjp-lightbox").css(
-					"transition", this.transitionStyle).append(
-					this.$lightboxImage);
+					"transition", this.transitionStyle).append($lightboxSpacer)
+					.append(this.$lightboxImage);
 			this.$element.append(this.$lightbox);
+
+			this.$nextLightboxThumbInner = undefined;
 		},
 
 		initState : function() {
@@ -164,6 +175,10 @@ var Portfolio = function() {
 			this.nextThumbsHolder = initializeShuffleHolder(this.thumbsCount);
 			this.nextThumbs = Array(this.thumbsCount);
 
+			this.cyclePosition = undefined;
+			this.cycleOldIndex = undefined;
+			this.cycleNewIndex = undefined;
+
 			this.nextThumbIndexIndex = 0;
 			this.thumbBatchStart = 0;
 
@@ -172,7 +187,6 @@ var Portfolio = function() {
 		},
 
 		drawBaseGallery : function() {
-			this.clear();
 			this.displayMode = DISPLAY_MODE_BASE;
 
 			// Display thumbnails in a random order.
@@ -193,10 +207,17 @@ var Portfolio = function() {
 			clearTimeout(this.activeTimeout);
 			clearInterval(this.activeInterval);
 
+			this.$nextLightboxThumbInner = undefined;
+
 			for ( var i = 0; i < this.imagesCount; i++) {
 				var $thumb = this.$thumbs[i];
-				$thumb.data("$inner").removeClass(
-						"is-pre-transition is-post-transition");
+
+				$thumb
+						.data("$inner")
+						.removeClass(
+								"is-pre-transition is-post-transition is-pre-flip is-post-flip");
+				$thumb.removeClass("is-moving");
+
 				$thumb.toggleClass("is-visible", this.drawnIndex[i] >= 0);
 
 				this.nextDrawnIndex[i] = -1;
@@ -219,6 +240,8 @@ var Portfolio = function() {
 					} else if (this.drawnIndex[i] != this.nextDrawnIndex[i]) {
 						this.toMoveLocation[this.toMoveCount] = this.nextDrawnIndex[i];
 						this.$toMove[this.toMoveCount++] = $thumb;
+
+						$thumb.addClass("is-moving");
 					}
 				} else if (this.drawnIndex[i] >= 0)
 					this.$toHide[this.toHideCount++] = $thumb;
@@ -245,18 +268,27 @@ var Portfolio = function() {
 		},
 
 		startAnimateDraw : function() {
-			this.setTimeout(this.midAnimateDraw, this.transitionMillis * 0.55);
+			this.setTimeout(this.midAnimateDraw, this.transitionMillis * 0.5);
 		},
 
 		midAnimateDraw : function() {
 			for ( var i = 0; i < this.imagesCount; i++)
 				this.drawnIndex[i] = this.nextDrawnIndex[i];
 
+			this.setTimeout(this.afterAnimateDraw, this.transitionMillis * 0.5);
+		},
+
+		afterAnimateDraw : function() {
 			for ( var i = 0; i < this.toHideCount; i++) {
 				var $thumb = this.$toHide[i];
 				$thumb.data("$inner").removeClass("is-post-transition");
 				$thumb.removeClass("is-visible");
 			}
+
+			for ( var i = 0; i < this.toMoveCount; i++)
+				this.$toMove[i].removeClass("is-moving");
+
+			this.maybeShowLightbox();
 		},
 
 		positionThumb : function($thumb, location) {
@@ -283,16 +315,45 @@ var Portfolio = function() {
 			if (this.nextThumbIndexIndex == this.thumbsCount)
 				this.prepareNextThumbs();
 
-			var thumbIndex = this.nextThumbs[this.nextThumbIndexIndex];
-			var imageIndex = this.thumbBatchStart + thumbIndex;
+			this.cyclePosition = this.nextThumbs[this.nextThumbIndexIndex];
+			var imageIndex = this.thumbBatchStart + this.cyclePosition;
 
-			this.nextDrawnIndex[this.getThumbIndex(imageIndex)] = thumbIndex;
-			this.nextDrawnIndex[this.getThumbIndex(imageIndex
-					- this.thumbsCount)] = -1;
+			this.cycleNewIndex = this.getThumbIndex(imageIndex);
+			this.cycleOldIndex = this.getThumbIndex(imageIndex
+					- this.thumbsCount);
 
 			this.nextThumbIndexIndex++;
 
-			this.draw();
+			var $thumb = this.$thumbs[this.cycleNewIndex];
+
+			$thumb.addClass("is-visible");
+			$thumb.data("$inner").addClass("is-pre-flip");
+
+			this.positionThumb($thumb, this.cyclePosition);
+
+			this.setTimeout(this.startAnimateCycle, 0);
+		},
+
+		startAnimateCycle : function() {
+			this.$thumbs[this.cycleOldIndex].data("$inner").addClass(
+					"is-post-flip");
+			this.$thumbs[this.cycleNewIndex].data("$inner").removeClass(
+					"is-pre-flip");
+
+			this.setTimeout(this.animateCycle, 0);
+		},
+
+		animateCycle : function() {
+			this.setTimeout(this.midAnimateCycle, 0.5 * this.transitionMillis);
+		},
+
+		midAnimateCycle : function() {
+			this.drawnIndex[this.cycleNewIndex] = this.cyclePosition;
+			this.drawnIndex[this.cycleOldIndex] = -1;
+
+			var $thumb = this.$thumbs[this.cycleOldIndex];
+			$thumb.data("$inner").removeClass("is-post-flip");
+			$thumb.removeClass("is-visible");
 		},
 
 		getThumbIndex : function(imageIndex) {
@@ -300,7 +361,6 @@ var Portfolio = function() {
 		},
 
 		drawSectionGallery : function(sectionName) {
-			this.clear();
 			this.displayMode = DISPLAY_MODE_SECTION;
 
 			var section = this.sections[sectionName];
@@ -340,11 +400,15 @@ var Portfolio = function() {
 
 		onBaseLinkClick : function(event) {
 			event.preventDefault();
+
+			this.clear();
 			this.drawBaseGallery();
 		},
 
 		onSectionLinkClick : function(event) {
 			event.preventDefault();
+
+			this.clear();
 			this.drawSectionGallery(event.currentTarget.hash.substr(1));
 		},
 
@@ -352,34 +416,39 @@ var Portfolio = function() {
 			this.clear();
 
 			var $thumbInner = $(event.currentTarget);
-			var thumbInnerOffset = $thumbInner.offset();
 
-			var $window = $(window);
-			var x = thumbInnerOffset.top - $window.scrollTop();
-			var y = thumbInnerOffset.left - $window.scrollLeft();
+			if (this.displayMode == DISPLAY_MODE_BASE) {
+				this.$nextLightboxThumbInner = $thumbInner;
+				this.drawSectionGallery($thumbInner.data("section"));
+			} else
+				this.showInLightbox($thumbInner);
+		},
 
-			this.$lightboxImage.css({
-				"top" : x + "px",
-				"left" : y + "px",
-				"width" : $thumbInner.width() + "px",
-				"height" : $thumbInner.height() + "px"
-			});
+		maybeShowLightbox : function() {
+			if (this.$nextLightboxThumbInner != undefined) {
+				this.showInLightbox(this.$nextLightboxThumbInner);
+				this.$nextLightboxThumbInner = undefined;
+			}
+		},
+
+		showInLightbox : function($thumbInner) {
 			this.$lightboxImage.attr("src", $thumbInner.data("target"));
 
+			$(document.body).addClass("jjp-is-lightbox");
 			this.$lightbox.addClass("is-visible is-pre-transition");
-			this.$lightboxImage.addClass("is-visible");
+			this.$lightboxImage.addClass("is-pre-transition");
 
 			this.setTimeout(this.animateShowLightbox, 0);
 		},
 
 		animateShowLightbox : function() {
 			this.$lightbox.removeClass("is-pre-transition");
-			this.$lightboxImage.addClass("is-expanded");
+			this.$lightboxImage.removeClass("is-pre-transition");
 		},
 
 		onLightboxClick : function(event) {
 			this.$lightbox.addClass("is-post-transition");
-			this.$lightboxImage.removeClass("is-expanded");
+			this.$lightboxImage.addClass("is-post-transition");
 
 			this.setTimeout(this.startHideLightbox, 0);
 		},
@@ -389,8 +458,9 @@ var Portfolio = function() {
 		},
 
 		hideLightbox : function(event) {
+			$(document.body).removeClass("jjp-is-lightbox");
 			this.$lightbox.removeClass("is-visible is-post-transition");
-			this.$lightboxImage.removeClass("is-visible");
+			this.$lightboxImage.removeClass("is-post-transition");
 		}
 	};
 

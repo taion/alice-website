@@ -12,9 +12,12 @@
 	-webkit-perspective: 900;
 }
 
-.jjp-thumbnail.is-visible,.jjp-lightbox.is-visible,.jjp-lightbox-image.is-visible
-	{
+.jjp-thumbnail.is-visible,.jjp-lightbox.is-visible {
 	display: block;
+}
+
+.jjp-thumbnail.is-moving {
+	z-index: 1;
 }
 
 .jjp-thumbnail-inner {
@@ -37,24 +40,25 @@
 	z-index: 0;
 }
 
-.jjp-thumbnail-inner.is-pre-transition {
-	transform: rotateY(-180deg);
-	-moz-transform: rotateY(-180deg);
-	-ms-transform: rotateY(-180deg);
-	-o-transform: rotateY(-180deg);
-	-webkit-transform: rotateY(-180deg);
-	-o-transform: rotateY(-180deg);
-	-moz-transform: rotateY(-180deg);
-}
-
-.jjp-thumbnail-inner.is-post-transition {
+.jjp-thumbnail-inner.is-pre-flip {
 	transform: rotateY(180deg);
 	-moz-transform: rotateY(180deg);
 	-ms-transform: rotateY(180deg);
 	-o-transform: rotateY(180deg);
 	-webkit-transform: rotateY(180deg);
-	-o-transform: rotateY(180deg);
+}
+
+.jjp-thumbnail-inner.is-post-flip {
+	transform: rotateY(-180deg);
+	-moz-transform: rotateY(-180deg);
+	-ms-transform: rotateY(-180deg);
+	-o-transform: rotateY(-180deg);
+	-webkit-transform: rotateY(-180deg);
 	z-index: 1;
+}
+
+.jjp-thumbnail-inner.is-pre-transition, .jjp-thumbnail-inner.is-post-transition {
+	opacity: 0;
 }
 
 .jjp-lightbox {
@@ -64,26 +68,38 @@
 	right: 0;
 	bottom: 0;
 	display: none;
-	background-color: rgba(0, 0, 0, 0.75);
+	background-color: rgba(255, 255, 255, 1);
+	font-size: 0;
+	text-align: center;
+	cursor: zoom-out;
+	cursor: -moz-zoom-out;
+	cursor: -webkit-zoom-out;
 	z-index: 2;
 }
 
-.jjp-lightbox.is-pre-transition, .jjp-lightbox.is-post-transition {
-	background-color: rgba(0, 0, 0, 0);
+.jjp-lightbox.is-pre-transition,.jjp-lightbox.is-post-transition {
+	background-color: rgba(255, 255, 255, 0);
+}
+
+body.jjp-is-lightbox {
+	overflow: hidden;
+}
+
+.jjp-lightbox-spacer {
+	content: '';
+	display: inline-block;
+	height: 100%;
+	vertical-align: middle;
 }
 
 .jjp-lightbox-image {
-	position: fixed;
-	background-color: red;
+	display: inline-block;
 	max-width: 100%;
 	max-height: 100%;
-	display: none;
-	z-index: 3;
+	vertical-align: middle;
 }
 
-.jjp-lightbox-image.is-expanded {
-	left: 5% !important;
-	top: 5% !important;
-	width: 90% !important;
-	height: 90% !important;
+.jjp-lightbox-image.is-pre-transition,.jjp-lightbox-image.is-post-transition
+	{
+	opacity: 0;
 }
