@@ -97,17 +97,21 @@ var Portfolio = function() {
 			// section name -> [section start, section end)
 			this.sections = Object();
 
+			this.activeSectionStart = this.activeSectionEnd = null;
+
 			for ( var i = 0; i < this.data.length; i++) {
 				var sectionData = this.data[i];
 				var sectionName = sectionData.title;
 				var sectionItems = sectionData.items;
 
-				this.sections[sectionName] = [ this.$thumbs.length, undefined ];
+				var sectionStart = this.$thumbs.length;
+				this.sections[sectionName] = [ sectionStart, null ];
 
 				for ( var j = 0; j < sectionItems.length; j++) {
 					var imageData = sectionItems[j];
-					var $thumb = this.makeThumb(imageData.title, imageData.url,
-							width, height, sectionName);
+					var $thumb = this.makeThumb(sectionStart + j,
+							imageData.title, imageData.url, width, height,
+							sectionName);
 
 					this.$thumbs.push($thumb);
 					this.$element.append($thumb);
@@ -126,13 +130,13 @@ var Portfolio = function() {
 				throw "too few images for gallery";
 		},
 
-		makeThumb : function(title, url, width, height, sectionName) {
+		makeThumb : function(i, title, url, width, height, sectionName) {
 			var $inner = $("<div />").attr("title", title).addClass(
 					"jjp-thumbnail-inner").css("background-image",
-					"url(" + url + ")").data("target", url).data("section",
-					sectionName);
+					"url(" + url + ")").data("section", sectionName).data(
+					"index", i);
 			var $thumb = $("<figure />").addClass("jjp-thumbnail").append(
-					$inner).data("$inner", $inner);
+					$inner).data("$inner", $inner).data("target", url);
 
 			$inner.css("transition", this.transitionStyle);
 			$thumb.css({
@@ -145,16 +149,35 @@ var Portfolio = function() {
 		},
 
 		initLightbox : function() {
+			this.$lightbox = $("<figure />").addClass("jjp-lightbox").css(
+					"transition", this.transitionStyle);
+
+			this.$lightboxInners = Array(5);
+			this.activeLightboxInner = 2;
+			this.activeLightboxThumb = null;
+
+			for ( var i = 0; i < 5; i++) {
+				var $lightboxInner = this.makeLightboxInner();
+				if (i < this.activeLightboxInner)
+					$lightboxInner.addClass("is-prev");
+				else if (i > this.activeLightboxInner)
+					$lightboxInner.addClass("is-next");
+
+				this.$lightboxInners[i] = $lightboxInner;
+				this.$lightbox.append($lightboxInner);
+			}
+
+			this.$element.append(this.$lightbox);
+		},
+
+		makeLightboxInner : function() {
 			var $lightboxSpacer = $("<div />").addClass("jjp-lightbox-spacer");
-			this.$lightboxImage = $("<img />").addClass("jjp-lightbox-image")
+			var $lightboxImage = $("<img />").addClass("jjp-lightbox-image")
 					.css("transition", this.transitionStyle);
 
-			this.$lightbox = $("<figure />").addClass("jjp-lightbox").css(
-					"transition", this.transitionStyle).append($lightboxSpacer)
-					.append(this.$lightboxImage);
-			this.$element.append(this.$lightbox);
-
-			this.$nextLightboxThumbInner = undefined;
+			return $("<div />").addClass("jjp-lightbox-inner").append(
+					$lightboxSpacer).css("transition", this.transitionStyle)
+					.append($lightboxImage).data("$image", $lightboxImage);
 		},
 
 		initState : function() {
@@ -175,15 +198,15 @@ var Portfolio = function() {
 			this.nextThumbsHolder = initializeShuffleHolder(this.thumbsCount);
 			this.nextThumbs = Array(this.thumbsCount);
 
-			this.cyclePosition = undefined;
-			this.cycleOldIndex = undefined;
-			this.cycleNewIndex = undefined;
+			this.cyclePosition = null;
+			this.cycleOldIndex = null;
+			this.cycleNewIndex = null;
 
 			this.nextThumbIndexIndex = 0;
 			this.thumbBatchStart = 0;
 
-			this.activeInterval = undefined;
-			this.activeTimeout = undefined;
+			this.activeInterval = null;
+			this.activeTimeout = null;
 		},
 
 		drawBaseGallery : function() {
@@ -207,7 +230,7 @@ var Portfolio = function() {
 			clearTimeout(this.activeTimeout);
 			clearInterval(this.activeInterval);
 
-			this.$nextLightboxThumbInner = undefined;
+			this.$nextLightboxThumbInner = null;
 
 			for ( var i = 0; i < this.imagesCount; i++) {
 				var $thumb = this.$thumbs[i];
@@ -363,12 +386,12 @@ var Portfolio = function() {
 		drawSectionGallery : function(sectionName) {
 			this.displayMode = DISPLAY_MODE_SECTION;
 
-			var section = this.sections[sectionName];
-			var i0 = section[0];
-			var i1 = section[1];
+			var activeSection = this.sections[sectionName];
+			this.activeSectionStart = activeSection[0];
+			this.activeSectionEnd = activeSection[1];
 
-			for ( var i = i0; i < i1; i++)
-				this.nextDrawnIndex[i] = i - i0;
+			for ( var i = this.activeSectionStart; i < this.activeSectionEnd; i++)
+				this.nextDrawnIndex[i] = i - this.activeSectionStart;
 
 			this.draw();
 		},
@@ -425,31 +448,42 @@ var Portfolio = function() {
 		},
 
 		maybeShowLightbox : function() {
-			if (this.$nextLightboxThumbInner != undefined) {
+			if (this.$nextLightboxThumbInner != null) {
 				this.showInLightbox(this.$nextLightboxThumbInner);
-				this.$nextLightboxThumbInner = undefined;
+				this.$nextLightboxThumbInner = null;
 			}
 		},
 
 		showInLightbox : function($thumbInner) {
-			this.$lightboxImage.attr("src", $thumbInner.data("target"));
+			this.activeLightboxThumb = $thumbInner.data("index");
+			this.populateLightboxes();
 
 			$(document.body).addClass("jjp-is-lightbox");
 			this.$lightbox.addClass("is-visible is-pre-transition");
-			this.$lightboxImage.addClass("is-pre-transition");
 
 			this.setTimeout(this.animateShowLightbox, 0);
 		},
 
+		populateLightboxes : function() {
+			for ( var j = -2; j <= 2; j++) {
+				var i = this.activeLightboxThumb + j;
+				if (i >= this.activeSectionStart && i < this.activeSectionEnd) {
+					var lightboxInner = (this.activeLightboxInner + j) % 5;
+					if (lightboxInner < 0)
+						lightboxInner += 5;
+
+					this.$lightboxInners[lightboxInner].data("$image").attr(
+							"src", this.$thumbs[i].data("target"));
+				}
+			}
+		},
+
 		animateShowLightbox : function() {
 			this.$lightbox.removeClass("is-pre-transition");
-			this.$lightboxImage.removeClass("is-pre-transition");
 		},
 
 		onLightboxClick : function(event) {
 			this.$lightbox.addClass("is-post-transition");
-			this.$lightboxImage.addClass("is-post-transition");
-
 			this.setTimeout(this.startHideLightbox, 0);
 		},
 
@@ -460,7 +494,6 @@ var Portfolio = function() {
 		hideLightbox : function(event) {
 			$(document.body).removeClass("jjp-is-lightbox");
 			this.$lightbox.removeClass("is-visible is-post-transition");
-			this.$lightboxImage.removeClass("is-post-transition");
 		}
 	};
 
