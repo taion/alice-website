@@ -21,11 +21,11 @@
 }
 
 .jjp-thumbnail-inner {
-	position: relative;
+	position: absolute;
 	left: 4%;
 	top: 4%;
-	width: 92%;
-	height: 92%;
+	right: 4%;
+	bottom: 4%;
 	background-size: cover;
 	background-position: center;
 	background-repeat: no-repeat;
@@ -34,10 +34,15 @@
 	-ms-backface-visibility: hidden;
 	-o-backface-visibility: hidden;
 	-webkit-backface-visibility: hidden;
+	cursor: pointer;
 	cursor: zoom-in;
 	cursor: -moz-zoom-in;
 	cursor: -webkit-zoom-in;
 	z-index: 0;
+}
+
+.jjp-is-base-gallery .jjp-thumbnail-inner {
+	cursor: pointer;
 }
 
 .jjp-thumbnail-inner.is-pre-flip {
@@ -70,14 +75,30 @@
 	bottom: 0;
 	display: none;
 	background-color: rgba(255, 255, 255, 1);
-	cursor: zoom-out;
-	cursor: -moz-zoom-out;
-	cursor: -webkit-zoom-out;
+	cursor: url('cursor-close.cur'), url('css/cursor-close.cur'), pointer;
 	z-index: 2;
 }
 
 .jjp-lightbox.is-pre-transition,.jjp-lightbox.is-post-transition {
 	background-color: rgba(255, 255, 255, 0);
+}
+
+.jjp-lightbox-prev-control,.jjp-lightbox-next-control {
+	position: absolute;
+	top: 12%;
+	bottom: 12%;
+}
+
+.jjp-lightbox-prev-control {
+	left: 0;
+	right: 50%;
+	cursor: url('cursor-prev.cur'), url('css/cursor-prev.cur'), pointer;
+}
+
+.jjp-lightbox-next-control {
+	left: 50%;
+	right: 0;
+	cursor: url('cursor-next.cur'), url('css/cursor-next.cur'), pointer;
 }
 
 body.jjp-is-lightbox {
@@ -131,7 +152,6 @@ body.jjp-is-lightbox {
 	max-width: 100%;
 	max-height: 100%;
 	vertical-align: middle;
-	cursor: pointer;
 }
 
 .jjp-lightbox.is-pre-transition .jjp-lightbox-image,.jjp-lightbox.is-post-transition .jjp-lightbox-image

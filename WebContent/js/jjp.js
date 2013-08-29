@@ -1,7 +1,4 @@
 var Portfolio = function() {
-	var DISPLAY_MODE_BASE = 0;
-	var DISPLAY_MODE_SECTION = 1;
-
 	function initializeShuffleHolder(length) {
 		holder = Array(length);
 		for ( var i = 0; i < length; i++)
@@ -65,7 +62,8 @@ var Portfolio = function() {
 			this.onThumbnailClick = this.onThumbnailClick.bind(this);
 			this.animateShowLightbox = this.animateShowLightbox.bind(this);
 			this.onLightboxClick = this.onLightboxClick.bind(this);
-			this.onLightboxImageClick = this.onLightboxImageClick.bind(this);
+			this.onLightboxPrevClick = this.onLightboxPrevClick.bind(this);
+			this.onLightboxNextClick = this.onLightboxNextClick.bind(this);
 			this.startHideLightbox = this.startHideLightbox.bind(this);
 			this.hideLightbox = this.hideLightbox.bind(this);
 
@@ -174,6 +172,11 @@ var Portfolio = function() {
 				this.$lightbox.append($lightboxInner);
 			}
 
+			this.$lightbox.append($("<div />").addClass(
+					"jjp-lightbox-prev-control"));
+			this.$lightbox.append($("<div />").addClass(
+					"jjp-lightbox-next-control"));
+
 			this.$element.append(this.$lightbox);
 		},
 
@@ -219,12 +222,11 @@ var Portfolio = function() {
 			this.activeInterval = null;
 			this.activeTimeout = null;
 
-			this.displayMode = null;
 			this.lightboxActive = false;
 		},
 
 		drawBaseGallery : function() {
-			this.displayMode = DISPLAY_MODE_BASE;
+			this.$element.addClass("jjp-is-base-gallery");
 
 			// Display thumbnails in a random order.
 			shuffle(this.thumbsDisplayIndex, this.thumbsDisplayIndexHolder);
@@ -243,8 +245,6 @@ var Portfolio = function() {
 		clear : function() {
 			clearTimeout(this.activeTimeout);
 			clearInterval(this.activeInterval);
-
-			this.$nextLightboxThumbInner = null;
 
 			for ( var i = 0; i < this.imagesCount; i++) {
 				var $thumb = this.$thumbs[i];
@@ -324,8 +324,6 @@ var Portfolio = function() {
 
 			for ( var i = 0; i < this.toMoveCount; i++)
 				this.$toMove[i].removeClass("is-moving");
-
-			this.maybeShowLightbox();
 		},
 
 		positionThumb : function($thumb, location) {
@@ -393,7 +391,7 @@ var Portfolio = function() {
 		},
 
 		drawSectionGallery : function(sectionName) {
-			this.displayMode = DISPLAY_MODE_SECTION;
+			this.$element.removeClass("jjp-is-base-gallery");
 
 			var activeSection = this.sections[sectionName];
 			this.activeSectionStart = activeSection[0];
@@ -415,8 +413,10 @@ var Portfolio = function() {
 					this.onThumbnailClick);
 
 			this.$lightbox.click(this.onLightboxClick);
-			this.$element.find(".jjp-lightbox-image").click(
-					this.onLightboxImageClick);
+			this.$element.find(".jjp-lightbox-prev-control").click(
+					this.onLightboxPrevClick);
+			this.$element.find(".jjp-lightbox-next-control").click(
+					this.onLightboxNextClick);
 
 			$(document).keydown(this.onKeydown);
 		},
@@ -448,18 +448,10 @@ var Portfolio = function() {
 
 			var $thumbInner = $(event.currentTarget);
 
-			if (this.displayMode == DISPLAY_MODE_BASE) {
-				this.$nextLightboxThumbInner = $thumbInner;
+			if (this.$element.hasClass("jjp-is-base-gallery"))
 				this.drawSectionGallery($thumbInner.data("section"));
-			} else
+			else
 				this.showInLightbox($thumbInner);
-		},
-
-		maybeShowLightbox : function() {
-			if (this.$nextLightboxThumbInner != null) {
-				this.showInLightbox(this.$nextLightboxThumbInner);
-				this.$nextLightboxThumbInner = null;
-			}
 		},
 
 		showInLightbox : function($thumbInner) {
@@ -478,12 +470,9 @@ var Portfolio = function() {
 			for ( var j = -2; j <= 2; j++) {
 				var $lightboxInner = this.getLightboxInner(j);
 
-				var i = this.activeLightboxThumb + j;
-				if (i >= this.activeSectionStart && i < this.activeSectionEnd) {
-
-					$lightboxInner.data("$image").attr("src",
-							this.$thumbs[i].data("target"));
-				}
+				var i = this.getLightboxThumbIndex(j);
+				$lightboxInner.data("$image").attr("src",
+						this.$thumbs[i].data("target"));
 
 				if (j < 0) {
 					$lightboxInner.addClass("is-prev");
@@ -512,6 +501,17 @@ var Portfolio = function() {
 			return this.$lightboxInners[lightboxInner];
 		},
 
+		getLightboxThumbIndex : function(j) {
+			var i = this.activeLightboxThumb + j;
+
+			if (i < this.activeSectionStart)
+				i += this.activeSectionEnd - this.activeSectionStart;
+			else if (i >= this.activeSectionEnd)
+				i -= this.activeSectionEnd - this.activeSectionStart;
+
+			return i;
+		},
+
 		animateShowLightbox : function() {
 			this.$lightbox.removeClass("is-pre-transition");
 		},
@@ -521,7 +521,12 @@ var Portfolio = function() {
 			this.setTimeout(this.startHideLightbox, 0);
 		},
 
-		onLightboxImageClick : function(event) {
+		onLightboxPrevClick : function() {
+			this.prevLightboxImage();
+			return false;
+		},
+
+		onLightboxNextClick : function() {
 			this.nextLightboxImage();
 			return false;
 		},
@@ -538,21 +543,17 @@ var Portfolio = function() {
 		},
 
 		nextLightboxImage : function() {
-			if (this.activeLightboxThumb + 1 < this.activeSectionEnd) {
-				this.activeLightboxThumb++;
-				this.activeLightboxInner++;
+			this.activeLightboxThumb = this.getLightboxThumbIndex(1);
+			this.activeLightboxInner++;
 
-				this.populateLightboxes();
-			}
+			this.populateLightboxes();
 		},
 
 		prevLightboxImage : function() {
-			if (this.activeLightboxThumb - 1 >= this.activeSectionStart) {
-				this.activeLightboxThumb--;
-				this.activeLightboxInner--;
+			this.activeLightboxThumb = this.getLightboxThumbIndex(-1);
+			this.activeLightboxInner--;
 
-				this.populateLightboxes();
-			}
+			this.populateLightboxes();
 		},
 
 		onKeydown : function(event) {
