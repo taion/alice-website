@@ -45,7 +45,6 @@ var Portfolio = function() {
 		bindMethods : function() {
 			this.animateDraw = this.animateDraw.bind(this);
 			this.startAnimateDraw = this.startAnimateDraw.bind(this);
-			this.midAnimateDraw = this.midAnimateDraw.bind(this);
 			this.afterAnimateDraw = this.afterAnimateDraw.bind(this);
 
 			this.animateCycle = this.animateCycle.bind(this);
@@ -65,9 +64,10 @@ var Portfolio = function() {
 			this.onLightboxPrevClick = this.onLightboxPrevClick.bind(this);
 			this.onLightboxNextClick = this.onLightboxNextClick.bind(this);
 			this.startHideLightbox = this.startHideLightbox.bind(this);
-			this.hideLightbox = this.hideLightbox.bind(this);
+			this.afterHideLightbox = this.afterHideLightbox.bind(this);
 
 			this.onKeydown = this.onKeydown.bind(this);
+			this.onHashChange = this.onHashChange.bind(this);
 		},
 
 		initArgs : function() {
@@ -97,8 +97,6 @@ var Portfolio = function() {
 
 			// section name -> [section start, section end)
 			this.sections = Object();
-
-			this.activeSectionStart = this.activeSectionEnd = null;
 
 			for ( var i = 0; i < this.data.length; i++) {
 				var sectionData = this.data[i];
@@ -136,7 +134,6 @@ var Portfolio = function() {
 				"background-image" : "url(" + url + ")",
 				"transition" : this.transitionStyle
 			}).data({
-				"title" : title,
 				"section" : sectionName,
 				"index" : i
 			});
@@ -147,7 +144,8 @@ var Portfolio = function() {
 				"transition" : this.transitionStyle,
 			}).data({
 				"$inner" : $inner,
-				"target" : url
+				"target" : url,
+				"title" : title,
 			});
 
 			return $thumb;
@@ -200,6 +198,11 @@ var Portfolio = function() {
 			for ( var i = 0; i < this.imagesCount; i++)
 				this.drawnIndex[i] = this.nextDrawnIndex[i] = -1;
 
+			this.activeSectionStart = this.activeSectionEnd = null;
+			this.activeSectionName = null;
+
+			this.pendingHashChanges = 0;
+
 			this.thumbsDisplayIndexHolder = initializeShuffleHolder(this.imagesCount);
 			this.thumbsDisplayIndex = Array(this.imagesCount);
 
@@ -227,6 +230,8 @@ var Portfolio = function() {
 
 		drawBaseGallery : function() {
 			this.$element.addClass("jjp-is-base-gallery");
+			this.activeSectionName = null;
+			this.setState("");
 
 			// Display thumbnails in a random order.
 			shuffle(this.thumbsDisplayIndex, this.thumbsDisplayIndexHolder);
@@ -240,6 +245,17 @@ var Portfolio = function() {
 					this.cycleMillis);
 
 			this.draw();
+		},
+
+		setState : function(state) {
+			if (window.location.hash == "" && state == "")
+				return;
+
+			var newHash = "#!" + state;
+			if (window.location.hash != newHash) {
+				window.location.hash = newHash;
+				this.pendingHashChanges++;
+			}
 		},
 
 		clear : function() {
@@ -282,6 +298,12 @@ var Portfolio = function() {
 					}
 				} else if (this.drawnIndex[i] >= 0)
 					this.$toHide[this.toHideCount++] = $thumb;
+
+				/*
+				 * For transitions, need to update drawn index immediately to
+				 * avoid inconsistency with window hash.
+				 */
+				this.drawnIndex[i] = this.nextDrawnIndex[i];
 			}
 
 			this.setTimeout(this.animateDraw, 0);
@@ -305,14 +327,7 @@ var Portfolio = function() {
 		},
 
 		startAnimateDraw : function() {
-			this.setTimeout(this.midAnimateDraw, this.transitionMillis * 0.5);
-		},
-
-		midAnimateDraw : function() {
-			for ( var i = 0; i < this.imagesCount; i++)
-				this.drawnIndex[i] = this.nextDrawnIndex[i];
-
-			this.setTimeout(this.afterAnimateDraw, this.transitionMillis * 0.5);
+			this.setTimeout(this.afterAnimateDraw, this.transitionMillis);
 		},
 
 		afterAnimateDraw : function() {
@@ -378,6 +393,10 @@ var Portfolio = function() {
 		},
 
 		midAnimateCycle : function() {
+			/*
+			 * Can defer drawn index update until mid-animation for smoother
+			 * transitions, as this does not affect the page hash at all.
+			 */
 			this.drawnIndex[this.cycleNewIndex] = this.cyclePosition;
 			this.drawnIndex[this.cycleOldIndex] = -1;
 
@@ -392,6 +411,8 @@ var Portfolio = function() {
 
 		drawSectionGallery : function(sectionName) {
 			this.$element.removeClass("jjp-is-base-gallery");
+			this.activeSectionName = sectionName;
+			this.setState("section/" + this.activeSectionName);
 
 			var activeSection = this.sections[sectionName];
 			this.activeSectionStart = activeSection[0];
@@ -419,6 +440,7 @@ var Portfolio = function() {
 					this.onLightboxNextClick);
 
 			$(document).keydown(this.onKeydown);
+			window.onhashchange = this.onHashChange;
 		},
 
 		getBoundTargetsThis : function() {
@@ -469,10 +491,10 @@ var Portfolio = function() {
 		populateLightboxes : function() {
 			for ( var j = -2; j <= 2; j++) {
 				var $lightboxInner = this.getLightboxInner(j);
+				var $thumb = this.$thumbs[this.getLightboxThumbIndex(j)];
 
-				var i = this.getLightboxThumbIndex(j);
-				$lightboxInner.data("$image").attr("src",
-						this.$thumbs[i].data("target"));
+				$lightboxInner.data("$image")
+						.attr("src", $thumb.data("target"));
 
 				if (j < 0) {
 					$lightboxInner.addClass("is-prev");
@@ -488,8 +510,10 @@ var Portfolio = function() {
 						$lightboxInner.addClass("is-hidden");
 					} else
 						$lightboxInner.removeClass("is-hidden");
-				} else
+				} else {
 					$lightboxInner.removeClass("is-next is-prev");
+					this.setState("image/" + $thumb.data("title"));
+				}
 			}
 		},
 
@@ -517,6 +541,10 @@ var Portfolio = function() {
 		},
 
 		onLightboxClick : function() {
+			this.hideLightbox();
+		},
+
+		hideLightbox : function() {
 			this.$lightbox.addClass("is-post-transition");
 			this.setTimeout(this.startHideLightbox, 0);
 		},
@@ -532,11 +560,12 @@ var Portfolio = function() {
 		},
 
 		startHideLightbox : function() {
-			this.setTimeout(this.hideLightbox, this.transitionMillis);
+			this.setTimeout(this.afterHideLightbox, this.transitionMillis);
 		},
 
-		hideLightbox : function() {
+		afterHideLightbox : function() {
 			this.lightboxActive = false;
+			this.setState("section/" + this.activeSectionName);
 
 			$(document.body).removeClass("jjp-is-lightbox");
 			this.$lightbox.removeClass("is-visible is-post-transition");
@@ -569,6 +598,13 @@ var Portfolio = function() {
 					this.onLightboxClick();
 					return false;
 				}
+			}
+		},
+
+		onHashChange : function() {
+			if (this.pendingHashChanges > 0) {
+				this.pendingHashChanges--;
+				return;
 			}
 		}
 	};
