@@ -87,6 +87,9 @@
 	position: absolute;
 	top: 12%;
 	bottom: 12%;
+	z-index: 3;
+	background: white;
+	opacity: 0;
 }
 
 .jjp-lightbox-prev-control {

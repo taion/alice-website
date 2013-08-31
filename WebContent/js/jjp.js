@@ -37,21 +37,16 @@ var Portfolio = function() {
 			this.initLightbox();
 			this.initState();
 
-			this.drawBaseGallery();
-
 			this.bindControls();
+
+			this.onHashChange();
 		},
 
 		bindMethods : function() {
-			this.animateDraw = this.animateDraw.bind(this);
-			this.startAnimateDraw = this.startAnimateDraw.bind(this);
 			this.afterAnimateDraw = this.afterAnimateDraw.bind(this);
 
-			this.animateCycle = this.animateCycle.bind(this);
-			this.startAnimateCycle = this.startAnimateCycle.bind(this);
-			this.midAnimateCycle = this.midAnimateCycle.bind(this);
-
 			this.cycleBaseGallery = this.cycleBaseGallery.bind(this);
+			this.midAnimateCycle = this.midAnimateCycle.bind(this);
 
 			this.targetsThis = this.getBoundTargetsThis();
 
@@ -59,11 +54,9 @@ var Portfolio = function() {
 			this.onSectionLinkClick = this.onSectionLinkClick.bind(this);
 
 			this.onThumbnailClick = this.onThumbnailClick.bind(this);
-			this.animateShowLightbox = this.animateShowLightbox.bind(this);
 			this.onLightboxClick = this.onLightboxClick.bind(this);
 			this.onLightboxPrevClick = this.onLightboxPrevClick.bind(this);
 			this.onLightboxNextClick = this.onLightboxNextClick.bind(this);
-			this.startHideLightbox = this.startHideLightbox.bind(this);
 			this.afterHideLightbox = this.afterHideLightbox.bind(this);
 
 			this.onKeydown = this.onKeydown.bind(this);
@@ -97,6 +90,10 @@ var Portfolio = function() {
 
 			// section name -> [section start, section end)
 			this.sections = Object();
+			// image title -> section name
+			this.imageSections = Object();
+			// image title -> image index
+			this.imagesByTitle = Object();
 
 			for ( var i = 0; i < this.data.length; i++) {
 				var sectionData = this.data[i];
@@ -108,12 +105,15 @@ var Portfolio = function() {
 
 				for ( var j = 0; j < sectionItems.length; j++) {
 					var imageData = sectionItems[j];
-					var $thumb = this.makeThumb(sectionStart + j,
-							imageData.title, imageData.url, width, height,
-							sectionName);
+					var imageTitle = imageData.title;
+
+					var $thumb = this.makeThumb(sectionStart + j, imageTitle,
+							imageData.url, width, height, sectionName);
 
 					this.$thumbs.push($thumb);
 					this.$element.append($thumb);
+
+					this.imageSections[imageTitle] = sectionName;
 				}
 
 				this.sections[sectionName][1] = this.$thumbs.length;
@@ -141,12 +141,14 @@ var Portfolio = function() {
 					$inner).css({
 				"width" : width,
 				"height" : height,
-				"transition" : this.transitionStyle,
+				"transition" : this.transitionStyle
 			}).data({
 				"$inner" : $inner,
 				"target" : url,
-				"title" : title,
+				"title" : title
 			});
+
+			this.imagesByTitle[title] = i;
 
 			return $thumb;
 		},
@@ -223,7 +225,8 @@ var Portfolio = function() {
 			this.thumbBatchStart = 0;
 
 			this.activeInterval = null;
-			this.activeTimeout = null;
+			this.galleryTimeout = null;
+			this.lightboxTimeout = null;
 
 			this.lightboxActive = false;
 		},
@@ -259,7 +262,8 @@ var Portfolio = function() {
 		},
 
 		clear : function() {
-			clearTimeout(this.activeTimeout);
+			clearTimeout(this.galleryTimeout);
+			clearTimeout(this.lightboxTimeout);
 			clearInterval(this.activeInterval);
 
 			for ( var i = 0; i < this.imagesCount; i++) {
@@ -274,6 +278,15 @@ var Portfolio = function() {
 				$thumb.toggleClass("is-visible", this.drawnIndex[i] >= 0);
 
 				this.nextDrawnIndex[i] = -1;
+			}
+
+			this.$lightbox.removeClass("is-pre-transition is-post-transition");
+			if (this.lightboxActive) {
+				this.$lightbox.addClass("is-visible");
+				$(document.body).addClass("jjp-is-lightbox");
+			} else {
+				this.$lightbox.removeClass("is-visible");
+				$(document.body).removeClass("jjp-is-lightbox");
 			}
 		},
 
@@ -306,14 +319,8 @@ var Portfolio = function() {
 				this.drawnIndex[i] = this.nextDrawnIndex[i];
 			}
 
-			this.setTimeout(this.animateDraw, 0);
-		},
+			this.forceReflow();
 
-		setTimeout : function(callback, timeoutMillis) {
-			this.activeTimeout = setTimeout(callback, timeoutMillis);
-		},
-
-		animateDraw : function() {
 			for ( var i = 0; i < this.toHideCount; i++)
 				this.$toHide[i].data("$inner").addClass("is-post-transition");
 
@@ -323,11 +330,14 @@ var Portfolio = function() {
 			for ( var i = 0; i < this.toMoveCount; i++)
 				this.positionThumb(this.$toMove[i], this.toMoveLocation[i]);
 
-			this.setTimeout(this.startAnimateDraw, 0);
+			this.forceReflow();
+
+			this.galleryTimeout = setTimeout(this.afterAnimateDraw,
+					this.transitionMillis);
 		},
 
-		startAnimateDraw : function() {
-			this.setTimeout(this.afterAnimateDraw, this.transitionMillis);
+		forceReflow : function() {
+			this.$element[0].clientHeight;
 		},
 
 		afterAnimateDraw : function() {
@@ -376,20 +386,17 @@ var Portfolio = function() {
 
 			this.positionThumb($thumb, this.cyclePosition);
 
-			this.setTimeout(this.startAnimateCycle, 0);
-		},
+			this.forceReflow();
 
-		startAnimateCycle : function() {
 			this.$thumbs[this.cycleOldIndex].data("$inner").addClass(
 					"is-post-flip");
 			this.$thumbs[this.cycleNewIndex].data("$inner").removeClass(
 					"is-pre-flip");
 
-			this.setTimeout(this.animateCycle, 0);
-		},
+			this.forceReflow();
 
-		animateCycle : function() {
-			this.setTimeout(this.midAnimateCycle, 0.5 * this.transitionMillis);
+			this.galleryTimeout = setTimeout(this.midAnimateCycle,
+					0.5 * this.transitionMillis);
 		},
 
 		midAnimateCycle : function() {
@@ -485,7 +492,9 @@ var Portfolio = function() {
 			$(document.body).addClass("jjp-is-lightbox");
 			this.$lightbox.addClass("is-visible is-pre-transition");
 
-			this.setTimeout(this.animateShowLightbox, 0);
+			this.forceReflow();
+
+			this.$lightbox.removeClass("is-pre-transition");
 		},
 
 		populateLightboxes : function() {
@@ -536,17 +545,20 @@ var Portfolio = function() {
 			return i;
 		},
 
-		animateShowLightbox : function() {
-			this.$lightbox.removeClass("is-pre-transition");
-		},
-
 		onLightboxClick : function() {
 			this.hideLightbox();
 		},
 
 		hideLightbox : function() {
+			this.lightboxActive = false;
+			this.setState("section/" + this.activeSectionName);
+
 			this.$lightbox.addClass("is-post-transition");
-			this.setTimeout(this.startHideLightbox, 0);
+
+			this.forceReflow();
+
+			this.lightboxTimeout = setTimeout(this.afterHideLightbox,
+					this.transitionMillis);
 		},
 
 		onLightboxPrevClick : function() {
@@ -559,14 +571,7 @@ var Portfolio = function() {
 			return false;
 		},
 
-		startHideLightbox : function() {
-			this.setTimeout(this.afterHideLightbox, this.transitionMillis);
-		},
-
 		afterHideLightbox : function() {
-			this.lightboxActive = false;
-			this.setState("section/" + this.activeSectionName);
-
 			$(document.body).removeClass("jjp-is-lightbox");
 			this.$lightbox.removeClass("is-visible is-post-transition");
 		},
@@ -605,6 +610,46 @@ var Portfolio = function() {
 			if (this.pendingHashChanges > 0) {
 				this.pendingHashChanges--;
 				return;
+			}
+
+			this.clear();
+
+			var label = window.location.hash.substr(2);
+
+			if (label.substr(0, 6) == "image/") {
+				var imageTitle = label.substr(6);
+				var i = this.imagesByTitle[imageTitle];
+
+				var sectionName = this.imageSections[imageTitle];
+				if (sectionName != this.activeSectionName)
+					this.drawSectionGallery(sectionName);
+
+				if (this.lightboxActive) {
+					if (i == this.getLightboxThumbIndex(-1))
+						this.prevLightboxImage();
+					else if (i == this.getLightboxThumbIndex(1))
+						this.nextLightboxImage();
+					else {
+						// do the full wipe
+					}
+				} else {
+					var $thumbInner = this.$thumbs[i].data("$inner");
+					this.showInLightbox($thumbInner);
+				}
+			} else {
+				if (this.lightboxActive) {
+					this.hideLightbox();
+				}
+
+				if (label == "")
+					this.drawBaseGallery();
+				else if (label.substr(0, 8) == "section/") {
+					var sectionName = label.substr(8);
+					if (sectionName != this.activeSectionName)
+						this.drawSectionGallery(sectionName);
+				}
+
+				// Otherwise do nothing; couldn't parse hash.
 			}
 		}
 	};
