@@ -48,11 +48,6 @@ var Portfolio = function() {
 			this.cycleBaseGallery = this.cycleBaseGallery.bind(this);
 			this.midAnimateCycle = this.midAnimateCycle.bind(this);
 
-			this.targetsThis = this.getBoundTargetsThis();
-
-			this.onBaseLinkClick = this.onBaseLinkClick.bind(this);
-			this.onSectionLinkClick = this.onSectionLinkClick.bind(this);
-
 			this.onThumbnailClick = this.onThumbnailClick.bind(this);
 			this.onLightboxClick = this.onLightboxClick.bind(this);
 			this.onLightboxPrevClick = this.onLightboxPrevClick.bind(this);
@@ -449,11 +444,6 @@ var Portfolio = function() {
 		},
 
 		bindControls : function() {
-			$(".jjp-base-link").filter(this.targetsThis).click(
-					this.onBaseLinkClick);
-			$(".jjp-section-link").filter(this.targetsThis).click(
-					this.onSectionLinkClick);
-
 			this.$element.find(".jjp-thumbnail-inner").click(
 					this.onThumbnailClick);
 
@@ -465,28 +455,6 @@ var Portfolio = function() {
 
 			$(document).keydown(this.onKeydown);
 			window.onhashchange = this.onHashChange;
-		},
-
-		getBoundTargetsThis : function() {
-			var $element = this.$element;
-
-			return function() {
-				return $($(this).data("target")).is($element);
-			};
-		},
-
-		onBaseLinkClick : function() {
-			this.clear();
-			this.drawBaseGallery();
-
-			return false;
-		},
-
-		onSectionLinkClick : function(event) {
-			this.clear();
-			this.drawSectionGallery(event.currentTarget.hash.substr(1));
-
-			return false;
 		},
 
 		onThumbnailClick : function(event) {
