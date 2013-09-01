@@ -133,6 +133,10 @@ body.jjp-is-lightbox {
 	display: none;
 }
 
+.jjp-lightbox-inner.is-backup {
+	opacity: 0;
+}
+
 .jjp-lightbox-image-holder {
 	position: absolute;
 	left: 5%;

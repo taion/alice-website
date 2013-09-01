@@ -172,6 +172,11 @@ var Portfolio = function() {
 				this.$lightbox.append($lightboxInner);
 			}
 
+			this.$lightboxInnerBackup = this.makeLightboxInner().addClass(
+					"is-backup");
+			this.disablePin(this.$lightboxInnerBackup);
+			this.$lightbox.append(this.$lightboxInnerBackup);
+
 			this.$lightbox.append($("<div />").addClass(
 					"jjp-lightbox-prev-control"));
 			this.$lightbox.append($("<div />").addClass(
@@ -194,6 +199,14 @@ var Portfolio = function() {
 					$lightboxImageHolder).data("$image", $lightboxImage);
 		},
 
+		disablePin : function($lightboxInner) {
+			$lightboxInner.data("$image").attr("nopin", "nopin");
+		},
+
+		enablePin : function($lightboxInner) {
+			$lightboxInner.data("$image").removeAttr("nopin");
+		},
+
 		initState : function() {
 			this.drawnIndex = Array(this.imagesCount);
 			this.nextDrawnIndex = Array(this.imagesCount);
@@ -204,6 +217,7 @@ var Portfolio = function() {
 			this.activeSectionName = null;
 
 			this.pendingHashChanges = 0;
+			this.suppressHashChange = false;
 
 			this.thumbsDisplayIndexHolder = initializeShuffleHolder(this.imagesCount);
 			this.thumbsDisplayIndex = Array(this.imagesCount);
@@ -252,6 +266,9 @@ var Portfolio = function() {
 
 		setState : function(state) {
 			if (window.location.hash == "" && state == "")
+				return;
+
+			if (this.suppressHashChange)
 				return;
 
 			var newHash = "#!" + state;
@@ -505,33 +522,41 @@ var Portfolio = function() {
 				$lightboxInner.data("$image")
 						.attr("src", $thumb.data("target"));
 
-				if (j < 0) {
-					$lightboxInner.addClass("is-prev");
-					if ($lightboxInner.hasClass("is-next")) {
-						$lightboxInner.removeClass("is-next");
-						$lightboxInner.addClass("is-hidden");
-					} else
-						$lightboxInner.removeClass("is-hidden");
-				} else if (j > 0) {
-					$lightboxInner.addClass("is-next");
-					if ($lightboxInner.hasClass("is-prev")) {
-						$lightboxInner.removeClass("is-prev");
-						$lightboxInner.addClass("is-hidden");
-					} else
-						$lightboxInner.removeClass("is-hidden");
-				} else {
+				if (j == 0) {
 					$lightboxInner.removeClass("is-next is-prev");
 					this.setState("image/" + $thumb.data("title"));
+					this.enablePin($lightboxInner);
+				} else {
+					this.disablePin($lightboxInner);
+					if (j < 0) {
+						$lightboxInner.addClass("is-prev");
+						if ($lightboxInner.hasClass("is-next")) {
+							$lightboxInner.removeClass("is-next");
+							$lightboxInner.addClass("is-hidden");
+						} else
+							$lightboxInner.removeClass("is-hidden");
+					} else {
+						$lightboxInner.addClass("is-next");
+						if ($lightboxInner.hasClass("is-prev")) {
+							$lightboxInner.removeClass("is-prev");
+							$lightboxInner.addClass("is-hidden");
+						} else
+							$lightboxInner.removeClass("is-hidden");
+					}
 				}
 			}
 		},
 
 		getLightboxInner : function(j) {
-			var lightboxInner = (this.activeLightboxInner + j) % 5;
-			if (lightboxInner < 0)
-				lightboxInner += 5;
+			return this.$lightboxInners[this.getLightboxInnerIndex(j)];
+		},
 
-			return this.$lightboxInners[lightboxInner];
+		getLightboxInnerIndex : function(j) {
+			var lightboxInnerIndex = (this.activeLightboxInner + j) % 5;
+			if (lightboxInnerIndex < 0)
+				lightboxInnerIndex += 5;
+
+			return lightboxInnerIndex;
 		},
 
 		getLightboxThumbIndex : function(j) {
@@ -553,6 +578,7 @@ var Portfolio = function() {
 			this.lightboxActive = false;
 			this.setState("section/" + this.activeSectionName);
 
+			this.disablePin(this.getLightboxInner(0));
 			this.$lightbox.addClass("is-post-transition");
 
 			this.forceReflow();
@@ -612,6 +638,7 @@ var Portfolio = function() {
 				return;
 			}
 
+			this.suppressHashChange = true;
 			this.clear();
 
 			var label = window.location.hash.substr(2);
@@ -630,7 +657,19 @@ var Portfolio = function() {
 					else if (i == this.getLightboxThumbIndex(1))
 						this.nextLightboxImage();
 					else {
-						// do the full wipe
+						this.$lightboxInnerBackup.removeClass("is-backup");
+						this.enablePin(this.$lightboxInnerBackup);
+
+						var j = this.getLightboxInnerIndex(0);
+						var $lightboxInnerTemp = this.$lightboxInners[j];
+						this.$lightboxInners[j] = this.$lightboxInnerBackup;
+						this.$lightboxInnerBackup = $lightboxInnerTemp;
+
+						this.$lightboxInnerBackup.addClass("is-backup");
+						this.disablePin(this.$lightboxInnerBackup);
+
+						this.activeLightboxThumb = i;
+						this.populateLightboxes();
 					}
 				} else {
 					var $thumbInner = this.$thumbs[i].data("$inner");
@@ -651,6 +690,8 @@ var Portfolio = function() {
 
 				// Otherwise do nothing; couldn't parse hash.
 			}
+
+			this.suppressHashChange = false;
 		}
 	};
 
