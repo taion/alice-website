@@ -74,13 +74,13 @@
 	right: 0;
 	bottom: 0;
 	display: none;
-	background-color: rgba(255, 255, 255, 1);
+	background-color: white;
 	cursor: url('cursor-close.cur'), url('css/cursor-close.cur'), pointer;
 	z-index: 2;
 }
 
 .jjp-lightbox.is-pre-transition,.jjp-lightbox.is-post-transition {
-	background-color: rgba(255, 255, 255, 0);
+	background-color: transparent;
 }
 
 .jjp-lightbox-prev-control,.jjp-lightbox-next-control {
