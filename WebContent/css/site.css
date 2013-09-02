@@ -11,6 +11,8 @@ body {
 .sidebar {
 	position: fixed;
 	padding-left: 10px;
+	padding-right: 10px;
+	width: 100px;
 	font-family: 'Whitney SSm A', 'Whitney SSm B';
 	font-weight: 700;
 	font-style: normal;
@@ -18,7 +20,7 @@ body {
 }
 
 .sidebar .logo {
-	width: 100px;
+	width: 100%;
 }
 
 .sidebar ul {
