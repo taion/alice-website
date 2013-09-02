@@ -1,4 +1,48 @@
+body {
+	padding-top: 10px;
+}
+
 #main-portfolio {
+	left: 120px;
 	width: 900px;
 	height: 600px;
+}
+
+.sidebar {
+	position: fixed;
+	padding-left: 10px;
+	font-family: 'Whitney SSm A', 'Whitney SSm B';
+	font-weight: 700;
+	font-style: normal;
+	font-size: 12px;
+}
+
+.sidebar .logo {
+	width: 100px;
+}
+
+.sidebar ul {
+	list-style-type: none;
+	padding-left: 1em;
+	margin: 0;
+}
+
+.sidebar ul ul {
+	padding-left: 1em;
+}
+
+.sidebar a,.sidebar a:visited {
+	color: black;
+}
+
+.sidebar a {
+	text-decoration: none;
+}
+
+.sidebar a:active,.sidebar a.jjp-is-active {
+	font-style: italic;
+}
+
+.sidebar a:hover,.sidebar a.jjp-is-highlight {
+	color: grey;
 }

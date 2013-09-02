@@ -85,21 +85,20 @@
 
 .jjp-lightbox-prev-control,.jjp-lightbox-next-control {
 	position: absolute;
-	top: 12%;
-	bottom: 12%;
-	z-index: 3;
+	top: 0;
+	bottom: 0;
+	width: 40%;
 	background: white;
 	opacity: 0;
+	z-index: 4;
 }
 
 .jjp-lightbox-prev-control {
 	left: 0;
-	right: 50%;
 	cursor: url('cursor-prev.cur'), url('css/cursor-prev.cur'), pointer;
 }
 
 .jjp-lightbox-next-control {
-	left: 50%;
 	right: 0;
 	cursor: url('cursor-next.cur'), url('css/cursor-next.cur'), pointer;
 }
@@ -115,6 +114,7 @@ body.jjp-is-lightbox {
 	width: 100%;
 	height: 100%;
 	display: block;
+	z-index: 3;
 }
 
 .jjp-lightbox-inner.is-prev,.jjp-lightbox-inner.is-next {
@@ -135,6 +135,7 @@ body.jjp-is-lightbox {
 
 .jjp-lightbox-inner.is-backup {
 	opacity: 0;
+	z-index: 2;
 }
 
 .jjp-lightbox-image-holder {

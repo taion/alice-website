@@ -49,6 +49,9 @@ var Portfolio = function() {
 			this.midAnimateCycle = this.midAnimateCycle.bind(this);
 
 			this.onThumbnailClick = this.onThumbnailClick.bind(this);
+			this.onThumbnailEnter = this.onThumbnailEnter.bind(this);
+			this.onThumbnailLeave = this.onThumbnailLeave.bind(this);
+
 			this.onLightboxClick = this.onLightboxClick.bind(this);
 			this.onLightboxPrevClick = this.onLightboxPrevClick.bind(this);
 			this.onLightboxNextClick = this.onLightboxNextClick.bind(this);
@@ -89,6 +92,10 @@ var Portfolio = function() {
 			this.imageSections = Object();
 			// image title -> image index
 			this.imagesByTitle = Object();
+			// section name -> link object
+			this.$sectionLinks = Object();
+
+			this.$baseLink = $("a[href='#!']");
 
 			for ( var i = 0; i < this.data.length; i++) {
 				var sectionData = this.data[i];
@@ -97,6 +104,9 @@ var Portfolio = function() {
 
 				var sectionStart = this.$thumbs.length;
 				this.sections[sectionName] = [ sectionStart, null ];
+
+				this.$sectionLinks[sectionName] = $("a[href='#!section/"
+						+ sectionName + "']");
 
 				for ( var j = 0; j < sectionItems.length; j++) {
 					var imageData = sectionItems[j];
@@ -211,6 +221,8 @@ var Portfolio = function() {
 			this.activeSectionStart = this.activeSectionEnd = null;
 			this.activeSectionName = null;
 
+			this.$activeLink = this.$highlightLink = $();
+
 			this.pendingHashChanges = 0;
 			this.suppressHashChange = false;
 
@@ -244,6 +256,7 @@ var Portfolio = function() {
 			this.$element.addClass("jjp-is-base-gallery");
 			this.activeSectionName = null;
 			this.setState("");
+			this.setActiveLink(this.$baseLink);
 
 			// Display thumbnails in a random order.
 			shuffle(this.thumbsDisplayIndex, this.thumbsDisplayIndexHolder);
@@ -273,6 +286,12 @@ var Portfolio = function() {
 			}
 		},
 
+		setActiveLink : function($activeLink) {
+			this.$activeLink.removeClass("jjp-is-active");
+			this.$activeLink = $activeLink;
+			$activeLink.addClass("jjp-is-active");
+		},
+
 		clear : function() {
 			clearTimeout(this.galleryTimeout);
 			clearTimeout(this.lightboxTimeout);
@@ -291,6 +310,8 @@ var Portfolio = function() {
 
 				this.nextDrawnIndex[i] = -1;
 			}
+
+			this.$highlightLink.removeClass("jjp-is-highlight");
 
 			this.$lightbox.removeClass("is-pre-transition is-post-transition");
 			if (this.lightboxActive) {
@@ -432,6 +453,7 @@ var Portfolio = function() {
 			this.$element.removeClass("jjp-is-base-gallery");
 			this.activeSectionName = sectionName;
 			this.setState("section/" + this.activeSectionName);
+			this.setActiveLink(this.$sectionLinks[sectionName]);
 
 			var activeSection = this.sections[sectionName];
 			this.activeSectionStart = activeSection[0];
@@ -445,7 +467,8 @@ var Portfolio = function() {
 
 		bindControls : function() {
 			this.$element.find(".jjp-thumbnail-inner").click(
-					this.onThumbnailClick);
+					this.onThumbnailClick).mouseenter(this.onThumbnailEnter)
+					.mouseleave(this.onThumbnailLeave);
 
 			this.$lightbox.click(this.onLightboxClick);
 			this.$element.find(".jjp-lightbox-prev-control").click(
@@ -462,10 +485,12 @@ var Portfolio = function() {
 
 			var $thumbInner = $(event.currentTarget);
 
-			if (this.$element.hasClass("jjp-is-base-gallery"))
+			if (this.activeSectionName == null)
 				this.drawSectionGallery($thumbInner.data("section"));
 			else
 				this.showInLightbox($thumbInner);
+
+			return false;
 		},
 
 		showInLightbox : function($thumbInner) {
@@ -538,8 +563,25 @@ var Portfolio = function() {
 			return i;
 		},
 
+		onThumbnailEnter : function(event) {
+			if (this.activeSectionName == null) {
+				this.$highlightLink.removeClass("jjp-is-highlight");
+				this.$highlightLink = this.$sectionLinks[$(event.currentTarget)
+						.data("section")];
+				this.$highlightLink.addClass("jjp-is-highlight");
+			}
+			return false;
+		},
+
+		onThumbnailLeave : function() {
+			if (this.activeSectionName == null)
+				this.$highlightLink.removeClass("jjp-is-highlight");
+			return false;
+		},
+
 		onLightboxClick : function() {
 			this.hideLightbox();
+			return false;
 		},
 
 		hideLightbox : function() {
