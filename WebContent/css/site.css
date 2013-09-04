@@ -26,9 +26,10 @@
 .sidebar {
 	position: fixed;
 	width: 150px;
-	font-family: 'Whitney SSm A', 'Whitney SSm B';
+	font-family: 'Gotham Narrow SSm A', 'Gotham Narrow SSm B';
 	font-style: normal;
-	font-size: 16px;
+	font-size: 17px;
+	line-height: 1.4;
 }
 
 .sidebar .logo {
@@ -37,13 +38,13 @@
 
 .sidebar ul {
 	list-style-type: none;
-	padding-left: 40px;
-	padding-right: 40px;
+	padding: 0;
 	margin: 0;
 }
 
 .sidebar ul ul {
-	padding-left: 1em;
+	padding-left: 15px;
+	padding-top: 5px;
 }
 
 .sidebar a,.sidebar a:visited {
