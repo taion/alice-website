@@ -1,5 +1,6 @@
 [
     {
+        "title": "lifestyle",
         "items": [
             {
                 "url": "http://alicegao.com/Portfolio/01Lifestyle/Lifestyle01.jpg"
@@ -115,10 +116,10 @@
             {
                 "url": "http://alicegao.com/Portfolio/01Lifestyle/Lifestyle38.jpg"
             }
-        ],
-        "title": "lifestyle"
+        ]
     },
     {
+        "title": "travel",
         "items": [
             {
                 "url": "http://alicegao.com/Portfolio/01Lifestyle/Lifestyle01.jpg"
@@ -234,7 +235,6 @@
             {
                 "url": "http://alicegao.com/Portfolio/01Lifestyle/Lifestyle38.jpg"
             }
-        ],
-        "title": "travel"
+        ]
     }
 ]
