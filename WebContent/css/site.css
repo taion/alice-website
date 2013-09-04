@@ -38,13 +38,12 @@
 
 .sidebar ul {
 	list-style-type: none;
-	padding: 0;
+	padding: 0 0 0 10px;
 	margin: 0;
 }
 
 .sidebar ul ul {
-	padding-left: 15px;
-	padding-top: 5px;
+	padding: 5px 0 0 15px;
 }
 
 .sidebar a,.sidebar a:visited {
