@@ -110,10 +110,14 @@ var Portfolio = function() {
 
 				for ( var j = 0; j < sectionItems.length; j++) {
 					var imageData = sectionItems[j];
-					var imageTitle = imageData.title;
+					var imageUrl = imageData.url;
+
+					// Parse stem of image file name.
+					var imageTitle = imageUrl.match(/^.*\/([^\/]+)\.[^\/]+$/)[1]
+							.toLowerCase();
 
 					var $thumb = this.makeThumb(sectionStart + j, imageTitle,
-							imageData.url, width, height, sectionName);
+							imageUrl, width, height, sectionName);
 
 					this.$thumbs.push($thumb);
 					this.$element.append($thumb);
@@ -135,8 +139,11 @@ var Portfolio = function() {
 		},
 
 		makeThumb : function(i, title, url, width, height, sectionName) {
+			var urlParts = url.match(/^(.+\/)(.+)$/);
+			var thumbUrl = urlParts[1] + "thumb/" + urlParts[2];
+
 			var $inner = $("<div />").addClass("jjp-thumbnail-inner").css({
-				"background-image" : "url(" + url + ")",
+				"background-image" : "url(" + thumbUrl + ")",
 				"transition" : this.transitionStyle
 			}).data({
 				"section" : sectionName,
