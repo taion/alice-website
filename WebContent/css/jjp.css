@@ -103,10 +103,6 @@
 	cursor: url('cursor-next.cur'), url('css/cursor-next.cur'), pointer;
 }
 
-body.jjp-is-lightbox {
-	overflow: hidden;
-}
-
 .jjp-lightbox-inner {
 	position: absolute;
 	left: 0;

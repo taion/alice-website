@@ -1,22 +1,34 @@
-body {
-	padding-top: 10px;
+.fake-body {
+	position: absolute;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	overflow-y: scroll;
+}
+
+.main-container {
+	width: 1050px;
+	margin-left: auto;
+	margin-top: 10px;
+	margin-right: auto;
+	position: relative;
 }
 
 #main-portfolio {
-	left: 120px;
+	left: 150px;
+	top: 20px;
 	width: 900px;
 	height: 600px;
+	position: absolute;
 }
 
 .sidebar {
 	position: fixed;
-	padding-left: 10px;
-	padding-right: 10px;
-	width: 100px;
+	width: 150px;
 	font-family: 'Whitney SSm A', 'Whitney SSm B';
-	font-weight: 700;
 	font-style: normal;
-	font-size: 12px;
+	font-size: 16px;
 }
 
 .sidebar .logo {
@@ -25,7 +37,8 @@ body {
 
 .sidebar ul {
 	list-style-type: none;
-	padding-left: 1em;
+	padding-left: 40px;
+	padding-right: 40px;
 	margin: 0;
 }
 

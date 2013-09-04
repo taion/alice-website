@@ -314,13 +314,10 @@ var Portfolio = function() {
 			this.$highlightLink.removeClass("jjp-is-highlight");
 
 			this.$lightbox.removeClass("is-pre-transition is-post-transition");
-			if (this.lightboxActive) {
+			if (this.lightboxActive)
 				this.$lightbox.addClass("is-visible");
-				$(document.body).addClass("jjp-is-lightbox");
-			} else {
+			else
 				this.$lightbox.removeClass("is-visible");
-				$(document.body).removeClass("jjp-is-lightbox");
-			}
 		},
 
 		draw : function() {
@@ -499,7 +496,6 @@ var Portfolio = function() {
 			this.activeLightboxThumb = $thumbInner.data("index");
 			this.populateLightboxes();
 
-			$(document.body).addClass("jjp-is-lightbox");
 			this.$lightbox.addClass("is-visible is-pre-transition");
 
 			this.forceReflow();
@@ -608,7 +604,6 @@ var Portfolio = function() {
 		},
 
 		afterHideLightbox : function() {
-			$(document.body).removeClass("jjp-is-lightbox");
 			this.$lightbox.removeClass("is-visible is-post-transition");
 		},
 
