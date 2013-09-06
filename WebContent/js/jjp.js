@@ -511,34 +511,39 @@ var Portfolio = function() {
 		},
 
 		populateLightboxes : function() {
-			for ( var j = -2; j <= 2; j++) {
-				var $lightboxInner = this.getLightboxInner(j);
-				var $thumb = this.$thumbs[this.getLightboxThumbIndex(j)];
+			this.populateLightbox(0);
+			this.populateLightbox(1);
+			this.populateLightbox(-1);
+			this.populateLightbox(2);
+			this.populateLightbox(-2);
+		},
 
-				$lightboxInner.data("$image")
-						.attr("src", $thumb.data("target"));
+		populateLightbox : function(j) {
+			var $lightboxInner = this.getLightboxInner(j);
+			var $thumb = this.$thumbs[this.getLightboxThumbIndex(j)];
 
-				if (j == 0) {
-					$lightboxInner.removeClass("is-next is-prev");
-					this.setState("image/" + $thumb.data("title"));
-					this.enablePin($lightboxInner);
+			$lightboxInner.data("$image").attr("src", $thumb.data("target"));
+
+			if (j == 0) {
+				$lightboxInner.removeClass("is-next is-prev");
+				this.setState("image/" + $thumb.data("title"));
+				this.enablePin($lightboxInner);
+			} else {
+				this.disablePin($lightboxInner);
+				if (j < 0) {
+					$lightboxInner.addClass("is-prev");
+					if ($lightboxInner.hasClass("is-next")) {
+						$lightboxInner.removeClass("is-next");
+						$lightboxInner.addClass("is-hidden");
+					} else
+						$lightboxInner.removeClass("is-hidden");
 				} else {
-					this.disablePin($lightboxInner);
-					if (j < 0) {
-						$lightboxInner.addClass("is-prev");
-						if ($lightboxInner.hasClass("is-next")) {
-							$lightboxInner.removeClass("is-next");
-							$lightboxInner.addClass("is-hidden");
-						} else
-							$lightboxInner.removeClass("is-hidden");
-					} else {
-						$lightboxInner.addClass("is-next");
-						if ($lightboxInner.hasClass("is-prev")) {
-							$lightboxInner.removeClass("is-prev");
-							$lightboxInner.addClass("is-hidden");
-						} else
-							$lightboxInner.removeClass("is-hidden");
-					}
+					$lightboxInner.addClass("is-next");
+					if ($lightboxInner.hasClass("is-prev")) {
+						$lightboxInner.removeClass("is-prev");
+						$lightboxInner.addClass("is-hidden");
+					} else
+						$lightboxInner.removeClass("is-hidden");
 				}
 			}
 		},
