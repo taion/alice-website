@@ -59,5 +59,11 @@
 }
 
 .sidebar a:hover,.sidebar a.jjp-is-highlight {
-	color: grey;
+	color: #999999;
+}
+
+.jjp-lightbox-caption {
+	font-family: 'Gotham Narrow SSm A', 'Gotham Narrow SSm B';
+	font-style: normal;
+	font-size: 17px;
 }

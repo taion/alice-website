@@ -62,8 +62,7 @@
 	z-index: 1;
 }
 
-.jjp-thumbnail-inner.is-pre-transition,.jjp-thumbnail-inner.is-post-transition
-	{
+.jjp-thumbnail-inner.is-faded {
 	opacity: 0;
 }
 
@@ -79,7 +78,7 @@
 	z-index: 2;
 }
 
-.jjp-lightbox.is-pre-transition,.jjp-lightbox.is-post-transition {
+.jjp-lightbox.is-faded {
 	background-color: transparent;
 }
 
@@ -113,6 +112,10 @@
 	z-index: 3;
 }
 
+.jjp-lightbox.is-faded .jjp-lightbox-inner {
+	opacity: 0;
+}
+
 .jjp-lightbox-inner.is-prev,.jjp-lightbox-inner.is-next {
 	opacity: 0;
 }
@@ -142,18 +145,24 @@
 	z-index: 2;
 }
 
-.jjp-lightbox-image-holder {
+.jjp-lightbox-image-holder,.jjp-lightbox-caption-holder {
 	position: absolute;
-	left: 5%;
-	top: 5%;
-	right: 5%;
-	bottom: 5%;
 	font-size: 0;
 	text-align: center;
 }
 
+.jjp-lightbox-image-holder {
+	left: 5%;
+	top: 5%;
+	right: 5%;
+	bottom: 5%;
+}
+
+.jjp-lightbox-inner.is-captioned .jjp-lightbox-image-holder {
+	bottom: 10%;
+}
+
 .jjp-lightbox-spacer {
-	content: '';
 	display: inline-block;
 	height: 100%;
 	vertical-align: middle;
@@ -166,7 +175,20 @@
 	vertical-align: middle;
 }
 
-.jjp-lightbox.is-pre-transition .jjp-lightbox-image,.jjp-lightbox.is-post-transition .jjp-lightbox-image
-	{
-	opacity: 0;
+.jjp-lightbox-caption-holder {
+	left: 20%;
+	right: 20%;
+	bottom: 0%;
+	height: 10%;
+	display: none;
+}
+
+.jjp-lightbox-inner.is-captioned .jjp-lightbox-caption-holder {
+	display: block;
+}
+
+.jjp-lightbox-caption {
+	display: inline-block;
+	vertical-align: middle;
+	font-size: 16px;
 }

@@ -116,8 +116,11 @@ var Portfolio = function() {
 					var imageTitle = imageUrl.match(/^.*\/([^\/]+)\.[^\/]+$/)[1]
 							.toLowerCase();
 
+					var imageCaption = "caption" in imageData ? imageData["caption"]
+							: null;
+
 					var $thumb = this.makeThumb(sectionStart + j, imageTitle,
-							imageUrl, width, height, sectionName);
+							imageUrl, imageCaption, width, height, sectionName);
 
 					this.$thumbs.push($thumb);
 					this.$element.append($thumb);
@@ -138,7 +141,7 @@ var Portfolio = function() {
 				throw "too few images for gallery";
 		},
 
-		makeThumb : function(i, title, url, width, height, sectionName) {
+		makeThumb : function(i, title, url, caption, width, height, sectionName) {
 			var urlParts = url.match(/^(.+\/)(.+)$/);
 			var thumbUrl = urlParts[1] + "thumb/" + urlParts[2];
 
@@ -157,7 +160,8 @@ var Portfolio = function() {
 			}).data({
 				"$inner" : $inner,
 				"target" : url,
-				"title" : title
+				"title" : title,
+				"caption" : caption
 			});
 
 			this.imagesByTitle[title] = i;
@@ -198,17 +202,24 @@ var Portfolio = function() {
 		},
 
 		makeLightboxInner : function() {
-			var $lightboxSpacer = $("<div />").addClass("jjp-lightbox-spacer");
-			var $lightboxImage = $("<img />").addClass("jjp-lightbox-image")
-					.css("transition", this.transitionStyle);
+			var $imageSpacer = $("<div />").addClass("jjp-lightbox-spacer");
+			var $image = $("<img />").addClass("jjp-lightbox-image").css(
+					"transition", this.transitionStyle);
+			var $imageHolder = $("<div />").addClass(
+					"jjp-lightbox-image-holder").append($imageSpacer, $image);
 
-			var $lightboxImageHolder = $("<div />").addClass(
-					"jjp-lightbox-image-holder").append($lightboxSpacer,
-					$lightboxImage);
+			var $captionSpacer = $("<div />").addClass("jjp-lightbox-spacer");
+			var $caption = $("<div />").addClass("jjp-lightbox-caption");
+			var $captionHolder = $("<div />").addClass(
+					"jjp-lightbox-caption-holder").append($captionSpacer,
+					$caption);
 
 			return $("<div />").addClass("jjp-lightbox-inner").css(
-					"transition", this.transitionStyle).append(
-					$lightboxImageHolder).data("$image", $lightboxImage);
+					"transition", this.transitionStyle).append($imageHolder,
+					$captionHolder).data({
+				"$image" : $image,
+				"$caption" : $caption
+			});
 		},
 
 		disablePin : function($lightboxInner) {
@@ -307,10 +318,8 @@ var Portfolio = function() {
 			for ( var i = 0; i < this.imagesCount; i++) {
 				var $thumb = this.$thumbs[i];
 
-				$thumb
-						.data("$inner")
-						.removeClass(
-								"is-pre-transition is-post-transition is-pre-flip is-post-flip");
+				$thumb.data("$inner").removeClass(
+						"is-faded is-pre-flip is-post-flip");
 				$thumb.removeClass("is-moving");
 
 				$thumb.toggleClass("is-visible", this.drawnIndex[i] >= 0);
@@ -320,7 +329,7 @@ var Portfolio = function() {
 
 			this.$highlightLink.removeClass("jjp-is-highlight");
 
-			this.$lightbox.removeClass("is-pre-transition is-post-transition");
+			this.$lightbox.removeClass("is-faded");
 			if (this.lightboxActive)
 				this.$lightbox.addClass("is-visible");
 			else
@@ -337,7 +346,7 @@ var Portfolio = function() {
 						this.$toShow[this.toShowCount++] = $thumb;
 
 						$thumb.addClass("is-visible");
-						$thumb.data("$inner").addClass("is-pre-transition");
+						$thumb.data("$inner").addClass("is-faded");
 
 						this.positionThumb($thumb, this.nextDrawnIndex[i]);
 					} else if (this.drawnIndex[i] != this.nextDrawnIndex[i]) {
@@ -359,10 +368,10 @@ var Portfolio = function() {
 			this.forceReflow();
 
 			for ( var i = 0; i < this.toHideCount; i++)
-				this.$toHide[i].data("$inner").addClass("is-post-transition");
+				this.$toHide[i].data("$inner").addClass("is-faded");
 
 			for ( var i = 0; i < this.toShowCount; i++)
-				this.$toShow[i].data("$inner").removeClass("is-pre-transition");
+				this.$toShow[i].data("$inner").removeClass("is-faded");
 
 			for ( var i = 0; i < this.toMoveCount; i++)
 				this.positionThumb(this.$toMove[i], this.toMoveLocation[i]);
@@ -380,7 +389,7 @@ var Portfolio = function() {
 		afterAnimateDraw : function() {
 			for ( var i = 0; i < this.toHideCount; i++) {
 				var $thumb = this.$toHide[i];
-				$thumb.data("$inner").removeClass("is-post-transition");
+				$thumb.data("$inner").removeClass("is-faded");
 				$thumb.removeClass("is-visible");
 			}
 
@@ -503,11 +512,11 @@ var Portfolio = function() {
 			this.activeLightboxThumb = $thumbInner.data("index");
 			this.populateLightboxes();
 
-			this.$lightbox.addClass("is-visible is-pre-transition");
+			this.$lightbox.addClass("is-visible is-faded");
 
 			this.forceReflow();
 
-			this.$lightbox.removeClass("is-pre-transition");
+			this.$lightbox.removeClass("is-faded");
 		},
 
 		populateLightboxes : function() {
@@ -523,6 +532,15 @@ var Portfolio = function() {
 			var $thumb = this.$thumbs[this.getLightboxThumbIndex(j)];
 
 			$lightboxInner.data("$image").attr("src", $thumb.data("target"));
+
+			var caption = $thumb.data("caption");
+			if (caption == null) {
+				$lightboxInner.removeClass("is-captioned");
+				$lightboxInner.data("$caption").text("");
+			} else {
+				$lightboxInner.addClass("is-captioned");
+				$lightboxInner.data("$caption").text(caption);
+			}
 
 			if (j == 0) {
 				$lightboxInner.removeClass("is-next is-prev");
@@ -597,7 +615,7 @@ var Portfolio = function() {
 			this.setState("section/" + this.activeSectionName);
 
 			this.disablePin(this.getLightboxInner(0));
-			this.$lightbox.addClass("is-post-transition");
+			this.$lightbox.addClass("is-faded");
 
 			this.forceReflow();
 
@@ -616,7 +634,7 @@ var Portfolio = function() {
 		},
 
 		afterHideLightbox : function() {
-			this.$lightbox.removeClass("is-visible is-post-transition");
+			this.$lightbox.removeClass("is-visible is-faded");
 		},
 
 		nextLightboxImage : function() {
