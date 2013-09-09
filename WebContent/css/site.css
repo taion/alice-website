@@ -15,11 +15,19 @@
 	position: relative;
 }
 
-#main-portfolio {
+.main-contents {
 	left: 200px;
 	width: 900px;
 	height: 600px;
 	position: absolute;
+}
+
+.about {
+	padding-top: 120px;
+	font-family: 'Gotham XNarrow SSm A', 'Gotham XNarrow SSm B';
+	font-size: 18px;
+	text-align: center;
+	line-height: 25px;
 }
 
 .sidebar {
@@ -28,38 +36,39 @@
 	font-family: 'Gotham XNarrow SSm A', 'Gotham XNarrow SSm B';
 	font-style: normal;
 	font-size: 18px;
-	line-height: 1.4;
+	line-height: 25px;
 }
 
 .sidebar .logo {
+	display: block;
 	width: 100%;
 	margin-top: 5px;
-	margin-bottom: 5px;
+	margin-bottom: 10px;
 }
 
-.portfolio-links {
-	margin-left: 5px;
-}
-
-.portfolio-links ul {
+.sidebar ul {
 	list-style-type: none;
-	padding: 5px 0 0 15px;
+	padding: 5px 0 5px 15px;
 	margin: 0;
 }
 
-.portfolio-links a,.portfolio-links a:visited {
+.sidebar-links>li {
+	padding-bottom: 5px;
+}
+
+.sidebar a,.sidebar a:visited {
 	color: black;
 }
 
-.portfolio-links a {
+.sidebar a {
 	text-decoration: none;
 }
 
-.portfolio-links a:active,.portfolio-links a.jjp-is-active {
+.sidebar a:active,.sidebar a.jjp-is-active {
 	font-style: italic;
 }
 
-.portfolio-links a:hover,.portfolio-links a.jjp-is-highlight {
+.sidebar a:hover,.sidebar a.jjp-is-highlight {
 	color: #999999;
 }
 

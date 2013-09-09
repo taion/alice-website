@@ -40,6 +40,7 @@ var Portfolio = function() {
 			this.bindControls();
 
 			this.onHashChange();
+			this.started = true;
 		},
 
 		bindMethods : function() {
@@ -231,6 +232,8 @@ var Portfolio = function() {
 		},
 
 		initState : function() {
+			this.started = false;
+
 			this.drawnIndex = Array(this.imagesCount);
 			this.nextDrawnIndex = Array(this.imagesCount);
 			for ( var i = 0; i < this.imagesCount; i++)
@@ -365,7 +368,7 @@ var Portfolio = function() {
 				this.drawnIndex[i] = this.nextDrawnIndex[i];
 			}
 
-			this.forceReflow();
+			this.reflow();
 
 			for ( var i = 0; i < this.toHideCount; i++)
 				this.$toHide[i].data("$inner").addClass("is-faded");
@@ -376,13 +379,13 @@ var Portfolio = function() {
 			for ( var i = 0; i < this.toMoveCount; i++)
 				this.positionThumb(this.$toMove[i], this.toMoveLocation[i]);
 
-			this.forceReflow();
+			this.reflow();
 
 			this.galleryTimeout = setTimeout(this.afterAnimateDraw,
 					this.transitionMillis);
 		},
 
-		forceReflow : function() {
+		reflow : function() {
 			this.$element[0].clientHeight;
 		},
 
@@ -432,14 +435,14 @@ var Portfolio = function() {
 
 			this.positionThumb($thumb, this.cyclePosition);
 
-			this.forceReflow();
+			this.reflow();
 
 			this.$thumbs[this.cycleOldIndex].data("$inner").addClass(
 					"is-post-flip");
 			this.$thumbs[this.cycleNewIndex].data("$inner").removeClass(
 					"is-pre-flip");
 
-			this.forceReflow();
+			this.reflow();
 
 			this.galleryTimeout = setTimeout(this.midAnimateCycle,
 					0.5 * this.transitionMillis);
@@ -512,11 +515,13 @@ var Portfolio = function() {
 			this.activeLightboxThumb = $thumbInner.data("index");
 			this.populateLightboxes();
 
-			this.$lightbox.addClass("is-visible is-faded");
-
-			this.forceReflow();
-
-			this.$lightbox.removeClass("is-faded");
+			if (this.started) {
+				this.$lightbox.addClass("is-visible is-faded");
+				this.reflow();
+				this.$lightbox.removeClass("is-faded");
+			} else {
+				this.$lightbox.addClass("is-visible");
+			}
 		},
 
 		populateLightboxes : function() {
@@ -622,7 +627,7 @@ var Portfolio = function() {
 			this.disablePin(this.getLightboxInner(0));
 			this.$lightbox.addClass("is-faded");
 
-			this.forceReflow();
+			this.reflow();
 
 			this.lightboxTimeout = setTimeout(this.afterHideLightbox,
 					this.transitionMillis);
