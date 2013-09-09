@@ -145,24 +145,24 @@ var Portfolio = function() {
 			var urlParts = url.match(/^(.+\/)(.+)$/);
 			var thumbUrl = urlParts[1] + "thumb/" + urlParts[2];
 
-			var $inner = $("<div />").addClass("jjp-thumbnail-inner").css({
+			var $inner = $("<div>").addClass("jjp-thumbnail-inner").css({
 				"background-image" : "url(" + thumbUrl + ")",
 				"transition" : this.transitionStyle
 			}).data({
 				"section" : sectionName,
 				"index" : i
 			});
-			var $thumb = $("<figure />").addClass("jjp-thumbnail").append(
-					$inner).css({
-				"width" : width,
-				"height" : height,
-				"transition" : this.transitionStyle
-			}).data({
-				"$inner" : $inner,
-				"target" : url,
-				"title" : title,
-				"caption" : caption
-			});
+			var $thumb = $("<figure>").addClass("jjp-thumbnail").append($inner)
+					.css({
+						"width" : width,
+						"height" : height,
+						"transition" : this.transitionStyle
+					}).data({
+						"$inner" : $inner,
+						"target" : url,
+						"title" : title,
+						"caption" : caption
+					});
 
 			this.imagesByTitle[title] = i;
 
@@ -170,7 +170,7 @@ var Portfolio = function() {
 		},
 
 		initLightbox : function() {
-			this.$lightbox = $("<figure />").addClass("jjp-lightbox").css(
+			this.$lightbox = $("<figure>").addClass("jjp-lightbox").css(
 					"transition", this.transitionStyle);
 
 			this.$lightboxInners = Array(5);
@@ -193,33 +193,33 @@ var Portfolio = function() {
 			this.disablePin(this.$lightboxInnerBackup);
 			this.$lightbox.append(this.$lightboxInnerBackup);
 
-			this.$lightbox.append($("<div />").addClass(
+			this.$lightbox.append($("<div>").addClass(
 					"jjp-lightbox-prev-control"));
-			this.$lightbox.append($("<div />").addClass(
+			this.$lightbox.append($("<div>").addClass(
 					"jjp-lightbox-next-control"));
 
 			this.$element.append(this.$lightbox);
 		},
 
 		makeLightboxInner : function() {
-			var $imageSpacer = $("<div />").addClass("jjp-lightbox-spacer");
-			var $image = $("<img />").addClass("jjp-lightbox-image").css(
+			var $imageSpacer = $("<div>").addClass("jjp-lightbox-spacer");
+			var $image = $("<img>").addClass("jjp-lightbox-image").css(
 					"transition", this.transitionStyle);
-			var $imageHolder = $("<div />").addClass(
-					"jjp-lightbox-image-holder").append($imageSpacer, $image);
+			var $imageHolder = $("<div>").addClass("jjp-lightbox-image-holder")
+					.append($imageSpacer, $image);
 
-			var $captionSpacer = $("<div />").addClass("jjp-lightbox-spacer");
-			var $caption = $("<div />").addClass("jjp-lightbox-caption");
-			var $captionHolder = $("<div />").addClass(
+			var $captionSpacer = $("<div>").addClass("jjp-lightbox-spacer");
+			var $caption = $("<div>").addClass("jjp-lightbox-caption");
+			var $captionHolder = $("<div>").addClass(
 					"jjp-lightbox-caption-holder").append($captionSpacer,
 					$caption);
 
-			return $("<div />").addClass("jjp-lightbox-inner").css(
-					"transition", this.transitionStyle).append($imageHolder,
-					$captionHolder).data({
-				"$image" : $image,
-				"$caption" : $caption
-			});
+			return $("<div>").addClass("jjp-lightbox-inner").css("transition",
+					this.transitionStyle).append($imageHolder, $captionHolder)
+					.data({
+						"$image" : $image,
+						"$caption" : $caption
+					});
 		},
 
 		disablePin : function($lightboxInner) {
@@ -520,26 +520,29 @@ var Portfolio = function() {
 		},
 
 		populateLightboxes : function() {
-			this.populateLightbox(0);
-			this.populateLightbox(1);
-			this.populateLightbox(-1);
-			this.populateLightbox(2);
-			this.populateLightbox(-2);
+			this.populateLightbox(0, true);
+			this.populateLightbox(1, true);
+			this.populateLightbox(-1, true);
+			this.populateLightbox(2, true);
+			this.populateLightbox(-2, true);
 		},
 
-		populateLightbox : function(j) {
+		populateLightbox : function(j, loadContents) {
 			var $lightboxInner = this.getLightboxInner(j);
 			var $thumb = this.$thumbs[this.getLightboxThumbIndex(j)];
 
-			$lightboxInner.data("$image").attr("src", $thumb.data("target"));
+			if (loadContents) {
+				$lightboxInner.data("$image")
+						.attr("src", $thumb.data("target"));
 
-			var caption = $thumb.data("caption");
-			if (caption == null) {
-				$lightboxInner.removeClass("is-captioned");
-				$lightboxInner.data("$caption").text("");
-			} else {
-				$lightboxInner.addClass("is-captioned");
-				$lightboxInner.data("$caption").text(caption);
+				var caption = $thumb.data("caption");
+				if (caption == null) {
+					$lightboxInner.removeClass("is-captioned");
+					$lightboxInner.data("$caption").text("");
+				} else {
+					$lightboxInner.addClass("is-captioned");
+					$lightboxInner.data("$caption").text(caption);
+				}
 			}
 
 			if (j == 0) {
@@ -606,8 +609,10 @@ var Portfolio = function() {
 		},
 
 		onLightboxClick : function() {
-			this.hideLightbox();
-			return false;
+			if (this.lightboxActive) {
+				this.hideLightbox();
+				return false;
+			}
 		},
 
 		hideLightbox : function() {
@@ -624,13 +629,17 @@ var Portfolio = function() {
 		},
 
 		onLightboxPrevClick : function() {
-			this.prevLightboxImage();
-			return false;
+			if (this.lightboxActive) {
+				this.prevLightboxImage();
+				return false;
+			}
 		},
 
 		onLightboxNextClick : function() {
-			this.nextLightboxImage();
-			return false;
+			if (this.lightboxActive) {
+				this.nextLightboxImage();
+				return false;
+			}
 		},
 
 		afterHideLightbox : function() {

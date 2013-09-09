@@ -159,13 +159,14 @@
 }
 
 .jjp-lightbox-inner.is-captioned .jjp-lightbox-image-holder {
-	bottom: 10%;
+	bottom: 6%;
 }
 
 .jjp-lightbox-spacer {
 	display: inline-block;
 	height: 100%;
 	vertical-align: middle;
+	visibility: hidden;
 }
 
 .jjp-lightbox-image {
@@ -179,7 +180,7 @@
 	left: 20%;
 	right: 20%;
 	bottom: 0%;
-	height: 10%;
+	height: 6%;
 	display: none;
 }
 

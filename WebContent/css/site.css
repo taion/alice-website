@@ -8,16 +8,15 @@
 }
 
 .main-container {
-	width: 1070px;
+	width: 1100px;
 	margin-left: auto;
-	margin-top: 10px;
+	margin-top: 30px;
 	margin-right: auto;
 	position: relative;
 }
 
 #main-portfolio {
-	left: 170px;
-	top: 20px;
+	left: 200px;
 	width: 900px;
 	height: 600px;
 	position: absolute;
@@ -25,8 +24,8 @@
 
 .sidebar {
 	position: fixed;
-	width: 150px;
-	font-family: 'Gotham Narrow SSm A', 'Gotham Narrow SSm B';
+	width: 180px;
+	font-family: 'Gotham XNarrow SSm A', 'Gotham XNarrow SSm B';
 	font-style: normal;
 	font-size: 17px;
 	line-height: 1.4;
@@ -34,36 +33,38 @@
 
 .sidebar .logo {
 	width: 100%;
+	margin-top: 5px;
+	margin-bottom: 5px;
 }
 
-.sidebar ul {
+.portfolio-links {
+	margin-left: 5px;
+}
+
+.portfolio-links ul {
 	list-style-type: none;
-	padding: 0 0 0 10px;
+	padding: 5px 0 0 15px;
 	margin: 0;
 }
 
-.sidebar ul ul {
-	padding: 5px 0 0 15px;
-}
-
-.sidebar a,.sidebar a:visited {
+.portfolio-links a,.portfolio-links a:visited {
 	color: black;
 }
 
-.sidebar a {
+.portfolio-links a {
 	text-decoration: none;
 }
 
-.sidebar a:active,.sidebar a.jjp-is-active {
+.portfolio-links a:active,.portfolio-links a.jjp-is-active {
 	font-style: italic;
 }
 
-.sidebar a:hover,.sidebar a.jjp-is-highlight {
+.portfolio-links a:hover,.portfolio-links a.jjp-is-highlight {
 	color: #999999;
 }
 
 .jjp-lightbox-caption {
-	font-family: 'Gotham Narrow SSm A', 'Gotham Narrow SSm B';
+	font-family: 'Gotham XNarrow SSm A', 'Gotham XNarrow SSm B';
 	font-style: normal;
-	font-size: 17px;
+	font-size: 14px;
 }
