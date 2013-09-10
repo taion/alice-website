@@ -568,5 +568,60 @@
                 "url": "http://alicegao.com/Portfolio/04Spaces/Spaces07.jpg"
             }
         ]
+    },
+    {
+        "title": "advertising",
+        "items": [
+            {
+                "url": "http://alicegao.com/Portfolio/05Advertising/Crate01.jpg",
+                "caption": "Crate & Barrel"
+            },
+            {
+                "url": "http://alicegao.com/Portfolio/05Advertising/Crate02.jpg"
+            },
+            {
+                "url": "http://alicegao.com/Portfolio/05Advertising/Crate03.jpg"
+            },
+            {
+                "url": "http://alicegao.com/Portfolio/05Advertising/Crate04.jpg"
+            },
+            {
+                "url": "http://alicegao.com/Portfolio/05Advertising/Crate05.jpg"
+            },
+            {
+                "url": "http://alicegao.com/Portfolio/05Advertising/Crate06.jpg"
+            },
+            {
+                "url": "http://alicegao.com/Portfolio/05Advertising/CLA01.jpg",
+                "caption": "Mercedes-Benz CLA Take the Wheel Campaign"
+            },
+            {
+                "url": "http://alicegao.com/Portfolio/05Advertising/CLA02.jpg"
+            },
+            {
+                "url": "http://alicegao.com/Portfolio/05Advertising/CLA03.jpg"
+            },
+            {
+                "url": "http://alicegao.com/Portfolio/05Advertising/CLA04.jpg"
+            },
+            {
+                "url": "http://alicegao.com/Portfolio/05Advertising/CLA05.jpg"
+            },
+            {
+                "url": "http://alicegao.com/Portfolio/05Advertising/CLA06.jpg"
+            },
+            {
+                "url": "http://alicegao.com/Portfolio/05Advertising/CLA07.jpg"
+            },
+            {
+                "url": "http://alicegao.com/Portfolio/05Advertising/CLA08.jpg"
+            },
+            {
+                "url": "http://alicegao.com/Portfolio/05Advertising/CLA09.jpg"
+            },
+            {
+                "url": "http://alicegao.com/Portfolio/05Advertising/CLA10.jpg"
+            }
+        ]
     }
 ]
