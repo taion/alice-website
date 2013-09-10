@@ -24,8 +24,11 @@ body {
 .main-contents {
 	left: 200px;
 	width: 900px;
-	height: 600px;
 	position: absolute;
+}
+
+#main-portfolio {
+	height: 600px;
 }
 
 .sidebar {
