@@ -59,6 +59,9 @@ body {
 	.sidebar-links>li {
 		padding-bottom: 5px;
 	}
+	.about {
+		padding-top: 95px;
+	}
 }
 
 @media ( max-width : 1139px ) {
@@ -99,6 +102,9 @@ body {
 		padding-right: 15px;
 		letter-spacing: -4px;
 	}
+	.about {
+		padding-top: 45px;
+	}
 }
 
 a,a:visited {
@@ -124,18 +130,41 @@ a:hover,a.jjp-is-highlight {
 }
 
 .about {
-	padding-top: 120px;
 	text-align: center;
+}
+
+.about-section {
+	width: 100%;
+	clear: both;
+	padding-top: 40px;
+}
+
+.about-section header {
+	padding-bottom: 15px;
+	font-style: italic;
+	text-transform: uppercase;
+	letter-spacing: 2px;
+	text-align: center;
+}
+
+.clients-list {
+	width: 600px;
+	list-style-type: none;
+	margin: 0 auto;
+	padding: 0 0 0 5em;
+}
+
+.clients-list li {
+	display: block;
+	float: left;
+	width: 200px;
 }
 
 .contact-links {
 	display: table;
 	list-style-type: none;
-	margin-top: 30px;
-	margin-left: auto;
-	margin-right: auto;
-	margin-bottom: 0;
-	padding: 0;
+	margin: 0 auto;
+	padding: 0 0 0 3em;
 }
 
 .contact-links li a {
