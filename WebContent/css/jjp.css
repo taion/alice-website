@@ -162,18 +162,15 @@
 	bottom: 8%;
 }
 
-.jjp-lightbox-spacer {
-	display: inline-block;
-	height: 100%;
-	vertical-align: middle;
-	visibility: hidden;
-}
-
 .jjp-lightbox-image {
-	display: inline-block;
+	position: absolute;
 	max-width: 100%;
 	max-height: 100%;
-	vertical-align: middle;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	margin: auto;
 }
 
 .jjp-lightbox-caption-holder {
@@ -181,15 +178,16 @@
 	right: 20%;
 	bottom: 0%;
 	height: 8%;
+	width: 60%;
 	display: none;
 }
 
 .jjp-lightbox-inner.is-captioned .jjp-lightbox-caption-holder {
-	display: block;
+	display: table;
 }
 
 .jjp-lightbox-caption {
-	display: inline-block;
+	display: table-cell;
 	vertical-align: middle;
 	font-size: 16px;
 }

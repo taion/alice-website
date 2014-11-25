@@ -203,17 +203,14 @@ var Portfolio = function() {
 		},
 
 		makeLightboxInner : function() {
-			var $imageSpacer = $("<div>").addClass("jjp-lightbox-spacer");
 			var $image = $("<img>").addClass("jjp-lightbox-image").css(
 					"transition", this.transitionStyle);
 			var $imageHolder = $("<div>").addClass("jjp-lightbox-image-holder")
-					.append($imageSpacer, $image);
+					.append($image);
 
-			var $captionSpacer = $("<div>").addClass("jjp-lightbox-spacer");
 			var $caption = $("<div>").addClass("jjp-lightbox-caption");
 			var $captionHolder = $("<div>").addClass(
-					"jjp-lightbox-caption-holder").append($captionSpacer,
-					$caption);
+					"jjp-lightbox-caption-holder").append($caption);
 
 			return $("<div>").addClass("jjp-lightbox-inner").css("transition",
 					this.transitionStyle).append($imageHolder, $captionHolder)
@@ -538,6 +535,7 @@ var Portfolio = function() {
 
 			if (loadContents) {
 				$lightboxInner.data("$image")
+						.attr("src", "")
 						.attr("src", $thumb.data("target"));
 
 				var caption = $thumb.data("caption");
